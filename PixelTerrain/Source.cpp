@@ -2,9 +2,22 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Pixel Terrain");
+
+    auto* terrain_pixels = new sf::Uint8[800 * 600 * 4];
+    sf::Texture terrain_texture;
+    terrain_texture.create(800, 600);
+
+    sf::Sprite terrain_sprite(terrain_texture);
+
+    for (int i = 0; i < 800 * 600 * 4; i += 4) {
+        terrain_pixels[i] = 255;
+        terrain_pixels[i + 1] = 0;
+        terrain_pixels[i + 2] = 0;
+        terrain_pixels[i + 3] = 255;
+    }
+	
+    terrain_texture.update(terrain_pixels);
 
     while (window.isOpen())
     {
@@ -16,7 +29,7 @@ int main()
         }
 
         window.clear();
-        window.draw(shape);
+        window.draw(terrain_sprite);
         window.display();
     }
 
