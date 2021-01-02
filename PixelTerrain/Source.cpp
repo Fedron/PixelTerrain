@@ -1,3 +1,4 @@
+#include <noise/noise.h>
 #include <SFML/Graphics.hpp>
 
 int main()
@@ -10,10 +11,10 @@ int main()
 
     sf::Sprite terrain_sprite(terrain_texture);
 
+    noise::module::Perlin perlinNoise;
+
     for (int i = 0; i < 800 * 600 * 4; i += 4) {
-        terrain_pixels[i] = 255;
-        terrain_pixels[i + 1] = 0;
-        terrain_pixels[i + 2] = 0;
+        terrain_pixels[i] = terrain_pixels[i + 1] = terrain_pixels[i + 2] = 255;
         terrain_pixels[i + 3] = 255;
     }
 	
