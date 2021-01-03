@@ -7,18 +7,37 @@ namespace generation_steps
 	{
         for (int x = 0; x < terrain->width_; x++)
         {
-            const double height = terrain->min_surface_level_ + \
-                (terrain->GetNoise(x) + 1) * (terrain->max_surface_level_ - \
-                    terrain->min_surface_level_) / 2;
+            const int surface_height = math_helpers::Remap(
+                terrain->GetNoise(x, 0),
+                -1, 1,
+                terrain->min_surface_level_, terrain->max_surface_level_);
 
+            const int grass_height = math_helpers::Remap(
+				terrain->GetNoise(x + 10000, 0),
+                -1, 1,
+                surface_height - terrain->grass_layer_height_, surface_height - 5);
+
+            const int dirt_height = math_helpers::Remap(
+                terrain->GetNoise(x - 10000, 0),
+                -1, 1,
+                grass_height - terrain->dirt_layer_height_, grass_height - 5);
+        	
             for (int y = 0; y < terrain->height_; y++)
             {
-                const int pos = (x + y * terrain->width_) * 4;
-
-                if (y < height)
-                    terrain->SetPixel(x, y, sf::Color::Transparent);
+                if (y >= grass_height && y < surface_height)
+                {
+                    terrain->SetBlock(x, y, blocks::kGrass);
+                } else if (y >= dirt_height && y < grass_height)
+                {
+                    terrain->SetBlock(x, y, blocks::kDirt);
+                } else if (y < dirt_height)
+                {
+                    terrain->SetBlock(x, y, blocks::kStone);
+                }
                 else
-                    terrain->SetPixel(x, y, sf::Color::White);
+                {
+                    terrain->SetBlock(x, y, blocks::kAir);
+                } 
             }
         }
 	}

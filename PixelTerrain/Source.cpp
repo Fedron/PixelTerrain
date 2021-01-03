@@ -4,7 +4,7 @@ int main()
 {	
     sf::RenderWindow window(sf::VideoMode(800, 600), "Pixel Terrain");
 
-	Terrain terrain(800, 600, 100, 500);
+	Terrain terrain(800, 600, 100, 500, 30, 80);
     terrain.AddGenerationStep(generation_steps::HeightMap);
     terrain.Generate();
 	
