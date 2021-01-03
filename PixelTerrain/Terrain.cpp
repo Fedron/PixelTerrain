@@ -15,26 +15,19 @@ Terrain::~Terrain()
 	delete[] texture_pixels_;
 }
 
+void Terrain::AddGenerationStep(void (*step)(const Terrain* terrain))
+{
+	generation_steps_.push_back(step);
+}
+
 void Terrain::Generate()
 {
 	perlin_noise_.SetSeed(time(nullptr));
-    for (int x = 0; x < width_; x++)
-    {
-	    const double noise_value = perlin_noise_.GetValue(x * 0.001, 0, 0);
-	    const double height = min_surface_level_ + (noise_value + 1) * (max_surface_level_ - min_surface_level_) / 2;
 
-        for (int y = 0; y < height_; y++)
-        {
-	        const int pos = (x + y * width_) * 4;
-
-            if (y < height)
-                texture_pixels_[pos] = texture_pixels_[pos + 1] = \
-        		texture_pixels_[pos + 2] = texture_pixels_[pos + 3] = 0;
-            else
-                texture_pixels_[pos] = texture_pixels_[pos + 1] = \
-        		texture_pixels_[pos + 2] = texture_pixels_[pos + 3] = 255;
-        }
-    }
+	for (int i = 0; i < generation_steps_.size(); i++)
+	{
+		(*generation_steps_[i])(this);
+	}
 
     texture_.update(texture_pixels_);
 }
@@ -42,4 +35,18 @@ void Terrain::Generate()
 const sf::Sprite* Terrain::GetSprite() const
 {
 	return &sprite_;
+}
+
+double Terrain::GetNoise(const int x) const
+{
+	return perlin_noise_.GetValue(x * 0.001, 0, 0);
+}
+
+void Terrain::SetPixel(const int x, const int y, const sf::Color color) const
+{
+	const int pos = (x + y * Terrain::width_) * 4;
+	texture_pixels_[pos] = color.r;
+	texture_pixels_[pos + 1] = color.g;
+	texture_pixels_[pos + 2] = color.b;
+	texture_pixels_[pos + 3] = color.a;
 }
