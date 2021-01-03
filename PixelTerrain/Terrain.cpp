@@ -8,6 +8,7 @@ min_surface_level_(min_surface_level), max_surface_level_(max_surface_level),
 grass_layer_height_(grass_layer_height), dirt_layer_height_(dirt_layer_height)
 {	
 	texture_pixels_ = new sf::Uint8[width * height * 4];
+	is_dirty_ = false;
 	
 	texture_.create(width, height);
 	sprite_.setTexture(texture_);
@@ -26,14 +27,13 @@ void Terrain::AddGenerationStep(void (*step)(const Terrain* terrain))
 void Terrain::Generate()
 {
 	const auto start_time = std::chrono::high_resolution_clock::now();
+	is_dirty_ = true;
 	perlin_noise_.SetSeed(time(nullptr));
 
 	for (auto& generation_step : generation_steps_)
 	{
 		(*generation_step)(this);
 	}
-
-    texture_.update(texture_pixels_);
 
 	const auto end_time = std::chrono::high_resolution_clock::now();	
 	const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
@@ -52,10 +52,25 @@ double Terrain::GetNoise(const int x, const int y) const
 
 void Terrain::SetBlock(const int x, const int y, const Block block) const
 {
+	if (x < 0 || x >= width_ || y < 0 || y >= height_) return;
+	
 	const int correct_y = height_ - y - 1;
 	const int pos = (x + correct_y * width_) * 4;
 	texture_pixels_[pos] = block.color.r;
 	texture_pixels_[pos + 1] = block.color.g;
 	texture_pixels_[pos + 2] = block.color.b;
 	texture_pixels_[pos + 3] = block.color.a;
+}
+
+void Terrain::SetDirty()
+{
+	is_dirty_ = true;
+}
+
+void Terrain::UpdateTexture()
+{
+	if (!is_dirty_) return;
+	
+	is_dirty_ = false;
+	texture_.update(texture_pixels_);
 }

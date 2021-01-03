@@ -22,6 +22,8 @@ public:
 	double GetNoise(int x, int y) const;
 
 	void SetBlock(int x, int y, Block block) const;
+	void SetDirty();
+	void UpdateTexture();
 
 public:
 	const int width_;
@@ -33,6 +35,7 @@ public:
 
 private:
 	sf::Uint8* texture_pixels_;
+	bool is_dirty_;
 	
 	sf::Texture texture_;
 	sf::Sprite sprite_;
