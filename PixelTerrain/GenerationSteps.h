@@ -3,6 +3,9 @@
 
 namespace generation_steps
 {
+	/*
+	 * Generates a height-map
+	 */
 	inline void HeightMap(Terrain* terrain)
 	{
         terrain->perlin_noise_.SetFrequency(1);
@@ -17,7 +20,7 @@ namespace generation_steps
             const int grass_height = math_helpers::Remap(
 				terrain->GetNoise(x, 10000),
                 -1, 1,
-                surface_height - terrain->grass_layer_height_, surface_height - 5);
+                surface_height - terrain->grass_layer_height_, surface_height);
 
             const int dirt_height = math_helpers::Remap(
                 terrain->GetNoise(x, 20000),
@@ -59,14 +62,16 @@ namespace generation_steps
             const int move_amount = math_helpers::Remap(
                 terrain->GetNoise(x + 20000, -10000),
                 -1, 1,
-                -80, 80
+                -30, 30
             );
         	
             for (int y = terrain->min_surface_level_; y < terrain->height_; y++) {
                 Block block = terrain->GetBlock(x, y);
                 if (block != blocks::kAir && terrain->GetBlock(x, y + 1) == blocks::kAir)
                 {
-                    const Block new_block = move_amount < 0 ? blocks::kAir : block;
+                    const Block new_block =
+                        terrain->GetBlock(x + math_helpers::Sign(move_amount), y) != blocks::kAir ?
+                        blocks::kAir : block;
                     if (move_amount >= 0)
                     {
                         for (int i = 0; i < move_amount; i++)
@@ -89,5 +94,72 @@ namespace generation_steps
         }
 
         terrain->SetBlocks(overhang_terrain);
+	}
+
+	/*
+	 * Generates a water plane
+	 */
+	inline void Water(Terrain* terrain)
+	{
+        const auto water_start_time = std::chrono::high_resolution_clock::now();
+        const int water_level = rand() % terrain->max_surface_level_;
+
+		// Create the water level
+		for (int x = 0; x < terrain->width_; x++)
+		{
+            for (int y = terrain->min_surface_level_; y < terrain->height_; y++) {
+                if (y > water_level) break;
+                if (terrain->GetBlock(x, y) != blocks::kAir) continue;
+            	
+                terrain->SetBlock(x, y, blocks::kWater);
+            }
+		}
+        const auto water_end_time = std::chrono::high_resolution_clock::now();
+        const auto water_duration = std::chrono::duration_cast<std::chrono::milliseconds>(water_end_time - water_start_time);
+        std::cout << "Water generation completed in " << water_duration.count() << "ms" << std::endl;
+
+		// Replace grass and dirt near water with sand
+        const auto sand_start_time = std::chrono::high_resolution_clock::now();
+
+        const int water_range = 30;
+        for (int x = 0; x < terrain->width_; x++)
+        {
+            bool water_in_col = false;
+            for (int y = terrain->min_surface_level_ - water_range; y < water_level + water_range; y++) {
+                const Block block = terrain->GetBlock(x, y);
+                if (block == blocks::kWater) break;
+                if (block == blocks::kGrass || block == blocks::kDirt)
+                {
+                    bool within_water_range = false;
+
+                    for (int nx = x - water_range; nx < x + water_range; nx++)
+                    {
+                        for (int ny = y - water_range; ny < y + water_range; ny++)
+                        {
+                            if (terrain->GetBlock(nx, ny) == blocks::kWater)
+                            {
+                                within_water_range = true;
+                                break;
+                            }
+                        }
+
+                        if (within_water_range) break;
+                    }
+
+                    if (within_water_range)
+                    {
+                        terrain->SetBlock(x, y, blocks::kSand);
+                        water_in_col = true;
+                    }
+                }
+            }
+
+            if (!water_in_col)
+                x += water_range - 1;
+        }
+
+        const auto sand_end_time = std::chrono::high_resolution_clock::now();
+        const auto sand_duration = std::chrono::duration_cast<std::chrono::milliseconds>(sand_end_time - sand_start_time);
+        std::cout << "Sand generation completed in " << sand_duration.count() << "ms" << std::endl;
 	}
 }

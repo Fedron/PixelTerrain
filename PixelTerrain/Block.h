@@ -29,4 +29,6 @@ namespace blocks
 	const Block kGrass{ 1, sf::Color::Green };
 	const Block kDirt{ 2, sf::Color(156,96,67,255) };
 	const Block kStone{ 3, sf::Color(150,150,150,255) };
+	const Block kSand{ 3, sf::Color(242,209,107,255) };
+	const Block kWater{ 5, sf::Color(78, 182, 237, 255) };
 }

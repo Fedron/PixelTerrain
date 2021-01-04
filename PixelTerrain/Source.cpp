@@ -6,7 +6,8 @@ int main()
 
 	Terrain terrain(800, 600, 100, 500, 20, 80);
     terrain.AddGenerationStep(generation_steps::HeightMap);
-    terrain.AddGenerationStep(generation_steps::Overhangs);
+    //terrain.AddGenerationStep(generation_steps::Overhangs);
+    terrain.AddGenerationStep(generation_steps::Water);
     terrain.Generate();
 
     int brush_size = 4;

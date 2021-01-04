@@ -12,4 +12,11 @@ namespace math_helpers
 	{
 		return new_min + (value - min) * (new_max - new_min) / (max - min);
 	}
+
+	inline int Sign(const int value)
+	{
+		if (value > 0) return 1;
+		if (value < 0) return -1;
+		return 0;
+	}
 }
