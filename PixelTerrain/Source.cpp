@@ -4,8 +4,9 @@ int main()
 {	
     sf::RenderWindow window(sf::VideoMode(800, 600), "Pixel Terrain");
 
-	Terrain terrain(800, 600, 100, 500, 30, 80);
+	Terrain terrain(800, 600, 100, 500, 20, 80);
     terrain.AddGenerationStep(generation_steps::HeightMap);
+    terrain.AddGenerationStep(generation_steps::Overhangs);
     terrain.Generate();
 
     int brush_size = 4;
@@ -51,7 +52,6 @@ int main()
     	// Place dirt block
         if (left_mouse_held)
         {
-            terrain.SetDirty();
             sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
 
         	for (int x = mouse_pos.x - brush_size; x < mouse_pos.x + brush_size; x++)
@@ -66,7 +66,6 @@ int main()
     	// Delete blocks
         if (right_mouse_held)
         {
-            terrain.SetDirty();
             sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
 
             for (int x = mouse_pos.x - brush_size; x < mouse_pos.x + brush_size; x++)
@@ -78,10 +77,8 @@ int main()
             }
         }
 
-        terrain.UpdateTexture();
-    	
         window.clear();
-        window.draw(*terrain.GetSprite());
+        terrain.Draw(&window);
         window.display();
     }
 

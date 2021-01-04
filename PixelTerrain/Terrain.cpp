@@ -5,8 +5,9 @@ Terrain::Terrain(
 	int grass_layer_height, int dirt_layer_height) :
 width_(width), height_(height),
 min_surface_level_(min_surface_level), max_surface_level_(max_surface_level),
-grass_layer_height_(grass_layer_height), dirt_layer_height_(dirt_layer_height)
-{	
+grass_layer_height_(grass_layer_height), dirt_layer_height_(dirt_layer_height),
+blocks_(width * height, blocks::kAir)
+{
 	texture_pixels_ = new sf::Uint8[width * height * 4];
 	is_dirty_ = false;
 	
@@ -19,7 +20,7 @@ Terrain::~Terrain()
 	delete[] texture_pixels_;
 }
 
-void Terrain::AddGenerationStep(void (*step)(const Terrain* terrain))
+void Terrain::AddGenerationStep(void (*step)(Terrain* terrain))
 {
 	generation_steps_.push_back(step);
 }
@@ -40,37 +41,56 @@ void Terrain::Generate()
 	std::cout << "Generation completed in " << duration.count() << "ms" << std::endl;
 }
 
-const sf::Sprite* Terrain::GetSprite() const
-{
-	return &sprite_;
-}
-
 double Terrain::GetNoise(const int x, const int y) const
 {
 	return perlin_noise_.GetValue(x * 0.001, y * 0.001, 0);
 }
 
-void Terrain::SetBlock(const int x, const int y, const Block block) const
+void Terrain::SetBlock(const int x, const int y, const Block block)
 {
 	if (x < 0 || x >= width_ || y < 0 || y >= height_) return;
-	
+
+	is_dirty_ = true;
+
+	// Set actual block
+	blocks_[x + width_ * y] = block;
+
+	// Set texture pixel
 	const int correct_y = height_ - y - 1;
 	const int pos = (x + correct_y * width_) * 4;
+
 	texture_pixels_[pos] = block.color.r;
 	texture_pixels_[pos + 1] = block.color.g;
 	texture_pixels_[pos + 2] = block.color.b;
 	texture_pixels_[pos + 3] = block.color.a;
 }
 
-void Terrain::SetDirty()
+Block Terrain::GetBlock(const int x, const int y) const
 {
-	is_dirty_ = true;
+	if (x < 0 || x >= width_ || y < 0 || y >= height_)
+		return blocks::kAir;
+	
+	return blocks_[x + width_ * y];
 }
 
-void Terrain::UpdateTexture()
+void Terrain::SetBlocks(std::vector<Block> blocks)
 {
-	if (!is_dirty_) return;
+	for (int x = 0; x < width_; x++)
+	{
+		for (int y = 0; y < height_; y++)
+		{
+			SetBlock(x, y, blocks[x + y * width_]);
+		}
+	}
+}
+
+void Terrain::Draw(sf::RenderWindow* window)
+{
+	if (is_dirty_)
+	{
+		is_dirty_ = false;
+		texture_.update(texture_pixels_);
+	}
 	
-	is_dirty_ = false;
-	texture_.update(texture_pixels_);
+	window->draw(sprite_);
 }

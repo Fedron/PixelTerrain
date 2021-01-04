@@ -1,4 +1,6 @@
 #pragma once
+#include <utility>
+#include <vector>
 #include <chrono>
 #include <iostream>
 #include <vector>
@@ -15,32 +17,41 @@ public:
 		int grass_layer_height, int dirt_layer_height);
 	~Terrain();
 
-	void AddGenerationStep(void (*step)(const Terrain* terrain));
+	void AddGenerationStep(void (*step)(Terrain* terrain));
 	void Generate();
 	
-	const sf::Sprite* GetSprite() const;
 	double GetNoise(int x, int y) const;
 
-	void SetBlock(int x, int y, Block block) const;
-	void SetDirty();
-	void UpdateTexture();
+	void SetBlock(int x, int y, Block block);
+	Block GetBlock(int x, int y) const;
+
+	void SetBlocks(std::vector<Block> blocks);
+	std::vector<Block> GetBlocks() const
+	{
+		return blocks_;
+	}
+	
+	void Draw(sf::RenderWindow* window);
 
 public:
 	const int width_;
 	const int height_;
 	const int min_surface_level_;
 	const int max_surface_level_;
-	const int grass_layer_height_;
+	const int grass_layer_height_; 
 	const int dirt_layer_height_;
 
+	noise::module::Perlin perlin_noise_;
+
 private:
+	std::vector<Block> blocks_;
 	sf::Uint8* texture_pixels_;
 	bool is_dirty_;
 	
 	sf::Texture texture_;
 	sf::Sprite sprite_;
 
-	noise::module::Perlin perlin_noise_;
+	
 
-	std::vector<void (*)(const Terrain* terrain)> generation_steps_;
+	std::vector<void (*)(Terrain* terrain)> generation_steps_;
 };

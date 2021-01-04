@@ -3,8 +3,24 @@
 
 struct Block
 {
-	const int id = 0;
-	const sf::Color color;
+	int id = 0;
+	sf::Color color;
+
+	void operator=(const Block& other)
+	{
+		id = other.id;
+		color = other.color;
+	}
+
+	bool operator==(const Block& other) const
+	{
+		return id == other.id;
+	}
+
+	bool operator!=(const Block& other) const
+	{
+		return id != other.id;
+	}
 };
 
 namespace blocks
