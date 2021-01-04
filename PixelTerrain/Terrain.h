@@ -36,8 +36,8 @@ public:
 public:
 	const int width_;
 	const int height_;
-	const int min_surface_level_;
-	const int max_surface_level_;
+	int min_surface_level_;
+	int max_surface_level_;
 	const int grass_layer_height_; 
 	const int dirt_layer_height_;
 

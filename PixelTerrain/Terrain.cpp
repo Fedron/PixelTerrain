@@ -68,7 +68,7 @@ void Terrain::SetBlock(const int x, const int y, const Block block)
 Block Terrain::GetBlock(const int x, const int y) const
 {
 	if (x < 0 || x >= width_ || y < 0 || y >= height_)
-		return blocks::kAir;
+		return blocks::kNull;
 	
 	return blocks_[x + width_ * y];
 }

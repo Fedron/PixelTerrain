@@ -9,7 +9,8 @@ namespace generation_steps
 	inline void HeightMap(Terrain* terrain)
 	{
         terrain->perlin_noise_.SetFrequency(1);
-		
+
+		// Height-map generation
         for (int x = 0; x < terrain->width_; x++)
         {
             const int surface_height = math_helpers::Remap(
@@ -32,6 +33,13 @@ namespace generation_steps
                 if (y >= grass_height && y < surface_height)
                 {
                     terrain->SetBlock(x, y, blocks::kGrass);
+
+                	// Update surface levels
+                    if (y > terrain->max_surface_level_)
+                        terrain->max_surface_level_ = y;
+
+                    if (y < terrain->min_surface_level_)
+                        terrain->min_surface_level_ = y;
                 } else if (y >= dirt_height && y < grass_height)
                 {
                     terrain->SetBlock(x, y, blocks::kDirt);
@@ -45,6 +53,30 @@ namespace generation_steps
                 } 
             }
         }
+
+		// Smoothing (Removes any pixels at least 3 air blocks around)
+        for (int x = 0; x < terrain->width_; x++)
+        {
+            for (int y = terrain->min_surface_level_; y < terrain->height_; y++)
+            {
+                Block block = terrain->GetBlock(x, y);
+            	if (block != blocks::kGrass) continue;
+
+                int num_air = 0;
+                if (terrain->GetBlock(x - 1, y) == blocks::kAir)
+                    num_air++;
+                if (terrain->GetBlock(x + 1, y) == blocks::kAir)
+                    num_air++;
+                if (terrain->GetBlock(x, y + 1) == blocks::kAir)
+                    num_air++;
+
+                if (num_air == 3)
+                {
+                    terrain->SetBlock(x, y, blocks::kAir);
+                    break;
+                }
+            }
+        }
 	}
 
     /*
@@ -54,21 +86,30 @@ namespace generation_steps
     */
 	inline void Overhangs(Terrain* terrain)
 	{
-        terrain->perlin_noise_.SetFrequency(5);
+        terrain->perlin_noise_.SetFrequency(10);
 		
         std::vector<Block> overhang_terrain = terrain->GetBlocks();
 
         for (int x = 0; x < terrain->width_; x++) {
-            const int move_amount = math_helpers::Remap(
-                terrain->GetNoise(x + 20000, -10000),
-                -1, 1,
-                -30, 30
-            );
-        	
             for (int y = terrain->min_surface_level_; y < terrain->height_; y++) {
                 Block block = terrain->GetBlock(x, y);
-                if (block != blocks::kAir && terrain->GetBlock(x, y + 1) == blocks::kAir)
+
+            	// Check if the current block is on the surface
+                if (block == blocks::kAir) continue;
+                bool is_surface_block = false;
+                if (terrain->GetBlock(x + 1, y) == blocks::kAir)
+                    is_surface_block = true;
+                else if (terrain->GetBlock(x - 1, y) == blocks::kAir)
+                    is_surface_block = true;
+            	
+                if (is_surface_block)
                 {
+                    const int move_amount = math_helpers::Remap(
+                        terrain->GetNoise(x + 20000, -10000),
+                        -1, 1,
+                        -30, 30
+                    );
+                	
                     const Block new_block =
                         terrain->GetBlock(x + math_helpers::Sign(move_amount), y) != blocks::kAir ?
                         blocks::kAir : block;
@@ -93,6 +134,41 @@ namespace generation_steps
             }
         }
 
+        /*for (int x = 0; x < terrain->width_; x++)
+        {
+	        for (int y = terrain->min_surface_level_; y < terrain->height_ ; y++)
+	        {
+                Block block = terrain->GetBlock(x, y);
+	        	
+                if (block != blocks::kGrass) continue;
+                bool is_surface_block = false;
+	        	
+                if (terrain->GetBlock(x, y + 1) == blocks::kAir)
+                    is_surface_block = true;
+                else if (terrain->GetBlock(x + 1, y) == blocks::kAir)
+                    is_surface_block = true;
+                else if (terrain->GetBlock(x, y - 1) == blocks::kAir)
+                    is_surface_block = true;
+                else if (terrain->GetBlock(x - 1, y) == blocks::kAir)
+                    is_surface_block = true;
+	        	
+	        	if (is_surface_block)
+	        	{
+                    const int move_amount = math_helpers::Remap(
+                        terrain->GetNoise(x + 20000, -10000),
+                        -1, 1,
+                        -30, 30
+                    );
+
+                    const int pos = x + move_amount + y * terrain->width_;
+	        		if (pos >= terrain->width_ * terrain->height_)
+                        continue;
+	        		
+					overhang_terrain[pos] = blocks::kRed;
+	        	}
+	        }
+        }*/
+		
         terrain->SetBlocks(overhang_terrain);
 	}
 
@@ -103,7 +179,7 @@ namespace generation_steps
 	{
         const auto water_start_time = std::chrono::high_resolution_clock::now();
         const int water_level = rand() % terrain->max_surface_level_;
-
+		
 		// Create the water level
 		for (int x = 0; x < terrain->width_; x++)
 		{
@@ -127,15 +203,18 @@ namespace generation_steps
             bool water_in_col = false;
             for (int y = terrain->min_surface_level_ - water_range; y < water_level + water_range; y++) {
                 const Block block = terrain->GetBlock(x, y);
-                if (block == blocks::kWater) break;
+                if (block == blocks::kAir) break;
                 if (block == blocks::kGrass || block == blocks::kDirt)
                 {
                     bool within_water_range = false;
 
-                    for (int nx = x - water_range; nx < x + water_range; nx++)
+                	// Checks all points within a square of half-extends water_range
+                    for (int nx = x - water_range; nx <= x + water_range; nx++)
                     {
-                        for (int ny = y - water_range; ny < y + water_range; ny++)
+                        for (int ny = y - water_range; ny <= y + water_range; ny++)
                         {
+                        	// Below uses a circle check but it takes an extra 15 seconds
+                            // if (pow(nx - x, 2) + pow(ny - y, 2) > pow(water_range, 2)) continue;;
                             if (terrain->GetBlock(nx, ny) == blocks::kWater)
                             {
                                 within_water_range = true;
