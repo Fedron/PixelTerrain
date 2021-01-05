@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="GenerationSteps.h" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Terrain.cpp" />

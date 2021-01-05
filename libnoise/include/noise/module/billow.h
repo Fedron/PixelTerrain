@@ -55,6 +55,7 @@ namespace noise
     const double DEFAULT_BILLOW_PERSISTENCE = 0.5;
 
     /// Default noise quality for the the noise::module::Billow noise module.
+#pragma warning(disable : 26812)
     const noise::NoiseQuality DEFAULT_BILLOW_QUALITY = QUALITY_STD;
 
     /// Default noise seed for the the noise::module::Billow noise module.

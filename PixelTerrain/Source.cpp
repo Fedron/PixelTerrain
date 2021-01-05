@@ -10,7 +10,7 @@ int main()
     terrain.AddGenerationStep(generation_steps::Water);
     terrain.Generate();
 
-    int brush_size = 4;
+    int brush_size = 10;
     bool left_mouse_held = false;
     bool right_mouse_held = false;
 	
@@ -78,6 +78,10 @@ int main()
             }
         }
 
+    	// Update behaviour
+        terrain.Update();
+
+    	// Draw calls
         window.clear();
         terrain.Draw(&window);
         window.display();

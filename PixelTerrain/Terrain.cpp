@@ -53,16 +53,17 @@ void Terrain::SetBlock(const int x, const int y, const Block block)
 	is_dirty_ = true;
 
 	// Set actual block
-	blocks_[x + width_ * y] = block;
+	blocks_[x + y * width_] = block;
 
 	// Set texture pixel
 	const int correct_y = height_ - y - 1;
 	const int pos = (x + correct_y * width_) * 4;
 
-	texture_pixels_[pos] = block.color.r;
-	texture_pixels_[pos + 1] = block.color.g;
-	texture_pixels_[pos + 2] = block.color.b;
-	texture_pixels_[pos + 3] = block.color.a;
+	const sf::Color color = block.GetColor();
+	texture_pixels_[pos] = color.r;
+	texture_pixels_[pos + 1] = color.g;
+	texture_pixels_[pos + 2] = color.b;
+	texture_pixels_[pos + 3] = color.a;
 }
 
 Block Terrain::GetBlock(const int x, const int y) const
@@ -80,6 +81,41 @@ void Terrain::SetBlocks(std::vector<Block> blocks)
 		for (int y = 0; y < height_; y++)
 		{
 			SetBlock(x, y, blocks[x + y * width_]);
+		}
+	}
+}
+
+void Terrain::Update()
+{
+	for (int x = 0; x < width_; x++)
+	{
+		for (int y = 1; y < height_; y++)
+		{
+			Block block = blocks_[x + y * width_];
+
+			// Sand gravity			
+			if (block == blocks::kSand && GetBlock(x, y - 1) == blocks::kAir)
+			{
+				SetBlock(x, y - 1, block);
+				SetBlock(x, y, blocks::kAir);
+				continue;
+			}
+
+			// Water
+			if (block == blocks::kWater)
+			{
+				for (int dy = 0; dy >= -1; dy--)
+				{
+					for (int dx = -1; dx <= 1; dx++)
+					{
+						if (GetBlock(x + dx, y + dy) == blocks::kAir)
+						{
+							SetBlock(x + dx, y + dy, block);
+							SetBlock(x, y, blocks::kAir);
+						}
+					}
+				}
+			}
 		}
 	}
 }

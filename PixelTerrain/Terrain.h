@@ -30,7 +30,8 @@ public:
 	{
 		return blocks_;
 	}
-	
+
+	void Update();
 	void Draw(sf::RenderWindow* window);
 
 public:
@@ -50,8 +51,6 @@ private:
 	
 	sf::Texture texture_;
 	sf::Sprite sprite_;
-
-	
 
 	std::vector<void (*)(Terrain* terrain)> generation_steps_;
 };

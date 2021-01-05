@@ -1,26 +1,24 @@
 ﻿#pragma once
 #include <SFML/Graphics/Color.hpp>
 
-struct Block
+class Terrain;
+
+class Block
 {
-	int id = 0;
-	sf::Color color;
+public:
+	Block(int id, sf::Color color);
+	~Block() = default;
+	
+	void operator=(const Block& other);
+	bool operator==(const Block& other) const;
+	bool operator!=(const Block& other) const;
 
-	void operator=(const Block& other)
-	{
-		id = other.id;
-		color = other.color;
-	}
+public:
+	sf::Color GetColor() const;
 
-	bool operator==(const Block& other) const
-	{
-		return id == other.id;
-	}
-
-	bool operator!=(const Block& other) const
-	{
-		return id != other.id;
-	}
+private:
+	int id_;
+	sf::Color color_;
 };
 
 namespace blocks
@@ -30,7 +28,6 @@ namespace blocks
 	const Block kGrass{ 1, sf::Color::Green };
 	const Block kDirt{ 2, sf::Color(156,96,67,255) };
 	const Block kStone{ 3, sf::Color(150,150,150,255) };
-	const Block kSand{ 3, sf::Color(242,209,107,255) };
+	const Block kSand{ 4, sf::Color(242,209,107,255) };
 	const Block kWater{ 5, sf::Color(78, 182, 237, 255) };
-	const Block kRed{ 6, sf::Color::Red };
 }

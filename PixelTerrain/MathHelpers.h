@@ -1,5 +1,5 @@
 ﻿#pragma once
-#pragma warning(disable: 4244)
+#pragma warning(disable: 4244 26451)
 
 namespace math_helpers
 {
