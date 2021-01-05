@@ -9,7 +9,7 @@ namespace generation_steps
         {
             for (int y = 0; y < world->world_height_; y++)
             {
-                if (x < 20 && y < 20)
+                if (x > world->chunk_width_ && x < world->chunk_width_ * 2 && y > -1 && y < world->chunk_height_ )
                 {
                     world->SetBlock(x, y, blocks::kGrass);
                 } else
@@ -26,7 +26,7 @@ namespace generation_steps
 	inline void HeightMap(World* world)
 	{
         world->perlin_noise_.SetFrequency(1);
-
+    	
 		// Height-map generation
         for (int x = 0; x < world->world_width_; x++)
         {
@@ -72,7 +72,7 @@ namespace generation_steps
         }
 
 		// Smoothing (Removes any pixels at least 3 air blocks around)
-        /*for (int x = 0; x < world->world_width_; x++)
+        for (int x = 0; x < world->world_width_; x++)
         {
             for (int y = world->min_surface_level_; y < world->world_height_; y++)
             {
@@ -93,7 +93,7 @@ namespace generation_steps
                     break;
                 }
             }
-        }*/
+        }
 	}
 
     /*

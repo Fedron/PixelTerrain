@@ -13,9 +13,9 @@ grass_layer_height_(grass_layer_height), dirt_layer_height_(dirt_layer_height)
 {
 	chunks_.reserve(num_chunks_x * num_chunks_y);
 	// Create empty chunks
-	for (int chunk_x = 0; chunk_x < num_chunks_x; chunk_x++)
+	for (int chunk_y = 0; chunk_y < num_chunks_x; chunk_y++)
 	{
-		for (int chunk_y = 0; chunk_y < num_chunks_y; chunk_y++)
+		for (int chunk_x = 0; chunk_x < num_chunks_y; chunk_x++)
 		{
 			chunks_.emplace_back(new Chunk(this, chunk_x, chunk_y));
 		}

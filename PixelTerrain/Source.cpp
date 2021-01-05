@@ -7,8 +7,8 @@ int main()
 	World world(80, 60, 10, 10, 100, 500, 20, 80);
     //world.AddGenerationStep(generation_steps::Fill);
 	world.AddGenerationStep(generation_steps::HeightMap);
-    //world.AddGenerationStep(generation_steps::Overhangs);
-    //world.AddGenerationStep(generation_steps::Water);
+    world.AddGenerationStep(generation_steps::Overhangs);
+    world.AddGenerationStep(generation_steps::Water);
     world.Generate();
 
     int brush_size = 10;
