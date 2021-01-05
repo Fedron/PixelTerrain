@@ -16,10 +16,21 @@ public:
 
 	double GetNoise(int x, int y) const;
 
-	Block GetBlock(int x, int y) const;
-	void SetBlock(int x, int y, Block block);
-	std::vector<Block> GetBlocks() const;
-	void SetBlocks(std::vector<Block> blocks);
+	Block* GetBlock(int x, int y) const;
+	void SetBlock(int x, int y, Block* block);
+
+	Block* GetBlockRelativeToChunk(
+		int chunk_x, int chunk_y,
+		int block_x, int block_y
+	) const;
+	void SetBlockRelativeToChunk(
+		int chunk_x, int chunk_y,
+		int block_x, int block_y,
+		Block* block
+	);
+	
+	std::vector<Block*> GetBlocks() const;
+	void SetBlocks(std::vector<Block*> blocks);
 	
 	void Update();
 	void Draw(sf::RenderWindow* window);

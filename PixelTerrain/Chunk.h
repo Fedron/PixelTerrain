@@ -19,18 +19,19 @@ public:
 	Chunk(World* world, int world_x, int world_y);
 	~Chunk() = default;
 	
-	Block GetBlock(int x, int y) const;
-	void SetBlock(int x, int y, Block block);
+	Block* GetBlock(int x, int y) const;
+	void SetBlock(int x, int y, Block* block);
 
 	void Update();
 	void Draw(sf::RenderWindow* window);
 
 private:
 	World* world_;
+
 	const int world_x_;
 	const int world_y_;
 
-	std::vector<Block> blocks_;
+	std::vector<Block*> blocks_;
 	sf::Uint8* texture_pixels_;
 	bool is_dirty_;
 

@@ -47,10 +47,10 @@ double World::GetNoise(const int x, const int y) const
 	return perlin_noise_.GetValue(x * 0.001, y * 0.001, 0);
 }
 
-Block World::GetBlock(const int x, const int y) const
+Block* World::GetBlock(const int x, const int y) const
 {
 	if (x < 0 || x >= world_width_ || y < 0 || y >= world_height_)
-		return blocks::kNull;
+		return blocks::null;
 
 	const int chunk_x = x / chunk_width_;
 	const int chunk_y = y / chunk_height_;
@@ -59,7 +59,7 @@ Block World::GetBlock(const int x, const int y) const
 	return chunk->GetBlock(x - (chunk_x * chunk_width_), y - (chunk_y * chunk_height_));
 }
 
-void World::SetBlock(const int x, const int y, const Block block)
+void World::SetBlock(const int x, const int y, Block* block)
 {
 	if (x < 0 || x >= world_width_ || y < 0 || y >= world_height_)
 		return;
@@ -71,9 +71,29 @@ void World::SetBlock(const int x, const int y, const Block block)
 	chunk->SetBlock(x - (chunk_x * chunk_width_), y - (chunk_y * chunk_height_), block);
 }
 
-std::vector<Block> World::GetBlocks() const
+Block* World::GetBlockRelativeToChunk(
+	const int chunk_x, const int chunk_y,
+	const int block_x, const int block_y) const
 {
-	std::vector<Block> blocks(world_width_ * world_height_, blocks::kNull);
+	if (chunk_x < 0 || chunk_x >= num_chunks_x_ || chunk_y < 0 || chunk_y >= num_chunks_y_)
+		return blocks::null;
+	
+	return chunks_[chunk_x + chunk_y * num_chunks_x_]->GetBlock(block_x, block_y);
+}
+
+void World::SetBlockRelativeToChunk(
+	const int chunk_x, const int chunk_y,
+	const int block_x, const int block_y, Block* block)
+{
+	if (chunk_x < 0 || chunk_x >= num_chunks_x_ || chunk_y < 0 || chunk_y >= num_chunks_y_)
+		return;
+
+	chunks_[chunk_x + chunk_y * num_chunks_x_]->SetBlock(block_x, block_y, block);
+}
+
+std::vector<Block*> World::GetBlocks() const
+{
+	std::vector<Block*> blocks(world_width_ * world_height_, blocks::null);
 	
 	for (int x = 0; x < world_width_; x++)
 	{
@@ -86,7 +106,7 @@ std::vector<Block> World::GetBlocks() const
 	return blocks;
 }
 
-void World::SetBlocks(std::vector<Block> blocks)
+void World::SetBlocks(std::vector<Block*> blocks)
 {
 	for (int x = 0; x < world_width_; x++)
 	{

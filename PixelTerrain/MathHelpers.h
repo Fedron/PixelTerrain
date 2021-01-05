@@ -1,7 +1,7 @@
 ﻿#pragma once
 #pragma warning(disable: 4244 26451)
 
-namespace math_helpers
+namespace maths
 {
 	inline int Remap(const int value, const int min, const int max, const int new_min, const int new_max)
 	{
