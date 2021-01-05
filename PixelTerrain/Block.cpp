@@ -21,6 +21,11 @@ bool Block::operator!=(const Block& other) const
 	return id_ != other.id_;
 }
 
+int Block::GetId() const
+{
+	return id_;
+}
+
 sf::Color Block::GetColor() const
 {
 	return color_;

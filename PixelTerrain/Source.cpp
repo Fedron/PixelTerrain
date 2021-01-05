@@ -4,11 +4,12 @@ int main()
 {	
     sf::RenderWindow window(sf::VideoMode(800, 600), "Pixel Terrain");
 
-	Terrain terrain(800, 600, 100, 500, 20, 80);
-    terrain.AddGenerationStep(generation_steps::HeightMap);
-    terrain.AddGenerationStep(generation_steps::Overhangs);
-    terrain.AddGenerationStep(generation_steps::Water);
-    terrain.Generate();
+	World world(80, 60, 10, 10, 100, 500, 20, 80);
+    //world.AddGenerationStep(generation_steps::Fill);
+	world.AddGenerationStep(generation_steps::HeightMap);
+    //world.AddGenerationStep(generation_steps::Overhangs);
+    //world.AddGenerationStep(generation_steps::Water);
+    world.Generate();
 
     int brush_size = 10;
     bool left_mouse_held = false;
@@ -28,7 +29,7 @@ int main()
             case sf::Event::KeyPressed:
                 // Regenerate terrain
                 if (event.key.code == sf::Keyboard::Space)
-                    terrain.Generate();
+                    world.Generate();
                 break;
 
             case sf::Event::MouseButtonPressed:
@@ -59,7 +60,7 @@ int main()
         	{
                 for (int y = mouse_pos.y - brush_size; y < mouse_pos.y + brush_size; y++)
                 {
-                    terrain.SetBlock(x, terrain.height_ - y, blocks::kDirt);
+                    world.SetBlock(x, world.world_height_ - y, blocks::kDirt);
                 }
         	}
         }
@@ -73,17 +74,17 @@ int main()
             {
                 for (int y = mouse_pos.y - brush_size; y < mouse_pos.y + brush_size; y++)
                 {
-                    terrain.SetBlock(x, terrain.height_ - y, blocks::kAir);
+                    world.SetBlock(x, world.world_height_ - y, blocks::kAir);
                 }
             }
         }
 
     	// Update behaviour
-        terrain.Update();
+        world.Update();
 
     	// Draw calls
         window.clear();
-        terrain.Draw(&window);
+        world.Draw(&window);
         window.display();
     }
 

@@ -14,6 +14,7 @@ public:
 	bool operator!=(const Block& other) const;
 
 public:
+	int GetId() const;
 	sf::Color GetColor() const;
 
 private:
