@@ -41,47 +41,21 @@ void Block::OnUpdate(Chunk* chunk, int block_x, int block_y)
 
 void FallableBlock::OnUpdate(Chunk* chunk, const int block_x, const int block_y)
 {
-	if (*chunk->GetBlock(block_x, block_y - 1) == *blocks::air)
+	int max_fall = 0;
+	for (int i = 1; i <= fall_speed_; i++)
 	{
-		chunk->SetBlock(block_x, block_y, blocks::air);
-		chunk->SetBlock(block_x, block_y - 1, this);
+		if (*chunk->GetBlock(block_x, block_y - i) == *blocks::air)
+			max_fall++;
+		else
+			break;
 	}
+
+	if (max_fall == 0) return;
+
+	chunk->SetBlock(block_x, block_y, blocks::air);
+	chunk->SetBlock(block_x, block_y - max_fall, this);
 }
 
 void FluidBlock::OnUpdate(Chunk* chunk, const int block_x, const int block_y)
-{	
-	if (*chunk->GetBlock(block_x, block_y - 1) == *blocks::air)
-	{
-		chunk->SetBlock(block_x, block_y, blocks::air);
-		chunk->SetBlock(block_x, block_y - 1, this);
-		return;
-	}
-
-	if (*chunk->GetBlock(block_x - 1, block_y - 1) == *blocks::air)
-	{
-		chunk->SetBlock(block_x, block_y, blocks::air);
-		chunk->SetBlock(block_x - 1, block_y - 1, this);
-		return;
-	}
-
-	if (*chunk->GetBlock(block_x + 1, block_y + 1) == *blocks::air)
-	{
-		chunk->SetBlock(block_x, block_y, blocks::air);
-		chunk->SetBlock(block_x + 1, block_y + 1, this);
-		return;
-	}
-
-	if (*chunk->GetBlock(block_x - 1, block_y) == *blocks::air)
-	{
-		chunk->SetBlock(block_x, block_y, blocks::air);
-		chunk->SetBlock(block_x - 1, block_y, this);
-		return;
-	}
-
-	if (*chunk->GetBlock(block_x + 1, block_y) == *blocks::air)
-	{
-		chunk->SetBlock(block_x, block_y, blocks::air);
-		chunk->SetBlock(block_x + 1, block_y, this);
-		return;
-	}
+{
 }

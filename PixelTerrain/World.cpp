@@ -71,26 +71,6 @@ void World::SetBlock(const int x, const int y, Block* block)
 	chunk->SetBlock(x - (chunk_x * chunk_width_), y - (chunk_y * chunk_height_), block);
 }
 
-Block* World::GetBlockRelativeToChunk(
-	const int chunk_x, const int chunk_y,
-	const int block_x, const int block_y) const
-{
-	if (chunk_x < 0 || chunk_x >= num_chunks_x_ || chunk_y < 0 || chunk_y >= num_chunks_y_)
-		return blocks::null;
-	
-	return chunks_[chunk_x + chunk_y * num_chunks_x_]->GetBlock(block_x, block_y);
-}
-
-void World::SetBlockRelativeToChunk(
-	const int chunk_x, const int chunk_y,
-	const int block_x, const int block_y, Block* block)
-{
-	if (chunk_x < 0 || chunk_x >= num_chunks_x_ || chunk_y < 0 || chunk_y >= num_chunks_y_)
-		return;
-
-	chunks_[chunk_x + chunk_y * num_chunks_x_]->SetBlock(block_x, block_y, block);
-}
-
 std::vector<Block*> World::GetBlocks() const
 {
 	std::vector<Block*> blocks(world_width_ * world_height_, blocks::null);
@@ -119,9 +99,12 @@ void World::SetBlocks(std::vector<Block*> blocks)
 
 void World::Update()
 {
-	for (Chunk* chunk : chunks_)
+	for (int y = 0; y < num_chunks_y_; y++)
 	{
-		chunk->Update();
+		for (int x = 0; x < num_chunks_x_; x++)
+		{
+			chunks_[x + y * num_chunks_x_]->Update();
+		}
 	}
 }
 

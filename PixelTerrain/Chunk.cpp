@@ -19,63 +19,29 @@ blocks_(world->chunk_width_ * world->chunk_height_, blocks::air)
 	);
 }
 
-Block* Chunk::GetBlock(int x, int y) const
+Block* Chunk::GetBlock(const int x, const int y) const
 {
 	// Get block from surrounding chunks if x or y is out or bounds
 	if (x < 0 || x >= world_->chunk_width_ || y < 0 || y >= world_->chunk_height_)
 	{
-		if (x < 0) x -= world_->chunk_width_;
-		if (y < 0) y -= world_->chunk_height_;
+		const int global_x = (world_x_ * world_->chunk_width_) + x;
+		const int global_y = (world_y_ * world_->chunk_height_) + y;
 		
-		const int chunk_offset_x = maths::Sign(x) == 1 ?
-			x / world_->chunk_width_ :
-			(x - world_->chunk_width_) / world_->chunk_width_;
-		const int chunk_offset_y = maths::Sign(y) == 1 ?
-			y / world_->chunk_height_ :
-			((y - world_->chunk_height_) / world_->chunk_height_) + 1;
-
-		const int neigh_x = maths::Sign(chunk_offset_x) == 1 ?
-			x - ((x / world_->chunk_width_) * world_->chunk_width_) :
-			(((x - world_->chunk_width_) / -world_->chunk_width_) * world_->chunk_width_) + x;
-		const int neigh_y = maths::Sign(chunk_offset_y) == 1 ?
-			y - ((y / world_->chunk_height_) * world_->chunk_height_) :
-			(((y - world_->chunk_height_) / -world_->chunk_height_) * world_->chunk_height_) + y;
-		
-		return world_->GetBlockRelativeToChunk(
-			world_x_ + chunk_offset_x, world_y_ + chunk_offset_y,
-			neigh_x, neigh_y
-		);
+		return world_->GetBlock(global_x, global_y);
 	}
 
 	return blocks_[x + y * world_->chunk_width_];
 }
 
-void Chunk::SetBlock(int x, int y, Block* block)
+void Chunk::SetBlock(const int x, const int y, Block* block)
 {
 	// Set block in surrounding chunks if x or y is out or bounds
 	if (x < 0 || x >= world_->chunk_width_ || y < 0 || y >= world_->chunk_height_)
 	{
-		if (x < 0) x -= world_->chunk_width_;
-		if (y < 0) y -= world_->chunk_height_;
+		const int global_x = (world_x_ * world_->chunk_width_) + x;
+		const int global_y = (world_y_ * world_->chunk_height_) + y;
 
-		const int chunk_offset_x = maths::Sign(x) == 1 ?
-			x / world_->chunk_width_ :
-			(x - world_->chunk_width_) / world_->chunk_width_;
-		const int chunk_offset_y = maths::Sign(y) == 1 ?
-			y / world_->chunk_height_ :
-			((y - world_->chunk_height_) / world_->chunk_height_) + 1;
-
-		const int neigh_x = maths::Sign(chunk_offset_x) == 1 ?
-			x - ((x / world_->chunk_width_) * world_->chunk_width_) :
-			(((x - world_->chunk_width_) / -world_->chunk_width_) * world_->chunk_width_) + x;
-		const int neigh_y = maths::Sign(chunk_offset_y) == 1 ?
-			y - ((y / world_->chunk_height_) * world_->chunk_height_) :
-			(((y - world_->chunk_height_) / -world_->chunk_height_) * world_->chunk_height_) + y;
-
-		world_->SetBlockRelativeToChunk(
-			world_x_ + chunk_offset_x, world_y_ + chunk_offset_y,
-			neigh_x, neigh_y, block
-		);
+		world_->SetBlock(global_x, global_y, block);
 		return;
 	}
 

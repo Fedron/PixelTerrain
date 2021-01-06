@@ -3,7 +3,7 @@
 int main()
 {	
     sf::RenderWindow window(sf::VideoMode(800, 600), "Pixel Terrain");
-
+	
 	World world(80, 60, 10, 10, 100, 500, 20, 80);
 	world.AddGenerationStep(generation_steps::HeightMap);
     world.AddGenerationStep(generation_steps::Overhangs);
@@ -16,6 +16,7 @@ int main()
 	
     while (window.isOpen())
     {
+		// Event handling
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -59,7 +60,7 @@ int main()
         	{
                 for (int y = mouse_pos.y - brush_size; y < mouse_pos.y + brush_size; y++)
                 {
-                    world.SetBlock(x, world.world_height_ - y, blocks::sand);
+                    world.SetBlock(x, world.world_height_ - y, blocks::water);
                 }
         	}
         }
