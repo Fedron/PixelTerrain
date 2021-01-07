@@ -13,8 +13,11 @@ namespace generation_steps
 		{
 			for (int y = 0; y < world.world_height_; y++)
 			{
-				if ((y / world.chunk_height_) % 2 == 0)
-					world.SetBlock(x, y, blocks::dirt);
+				/*if ((y / world.chunk_height_) % 2 == 0)
+					world.SetBlock(x, y, blocks::dirt);*/
+
+				if (y < world.chunk_height_)
+                    world.SetBlock(x, y, blocks::dirt);
 			}
 		}
 	}

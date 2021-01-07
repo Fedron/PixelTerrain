@@ -1,6 +1,7 @@
 #pragma once
+#include <string>
+#include <vector>
 #include "Block.h"
-#include "vector"
 
 class World;
 
@@ -22,4 +23,7 @@ private:
 
 	std::vector<Block> blocks_;
 	sf::VertexArray vertices_;
+
+	/*sf::Font font_;
+	sf::Text text_;*/
 };

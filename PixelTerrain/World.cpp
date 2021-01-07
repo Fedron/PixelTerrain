@@ -16,7 +16,7 @@ grass_layer_height_(grass_layer_height), dirt_layer_height_(dirt_layer_height)
 {
 	chunks_.reserve(num_chunks_x_ * num_chunks_y_);
 	// Create empty chunks
-	for (int chunk_y = num_chunks_y_ - 1; chunk_y >= 0; chunk_y--)
+	for (int chunk_y = 0; chunk_y < num_chunks_y_; chunk_y++)
 	{
 		for (int chunk_x = 0; chunk_x < num_chunks_x_; chunk_x++)
 		{
@@ -57,8 +57,8 @@ Block World::GetBlock(const int x, const int y) const
 
 	const int chunk_x = x / chunk_width_;
 	const int chunk_y = y / chunk_height_;
+	
 	const Chunk* chunk = chunks_[chunk_x + chunk_y * num_chunks_x_];
-
 	return chunk->GetBlock(x - (chunk_x * chunk_width_), y - (chunk_y * chunk_height_));
 }
 

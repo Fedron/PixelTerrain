@@ -46,7 +46,7 @@ public:
 
 	noise::module::Perlin perlin_noise_;
 
-private:
+private:	
 	std::vector<void (*)(World& world)> generation_steps_;
 	std::vector<Chunk*> chunks_;
 };
