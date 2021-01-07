@@ -1,40 +1,29 @@
 #pragma once
-#include <utility>
+#include <string>
 #include <vector>
-#include <chrono>
-#include <iostream>
-#include <vector>
-#include <noise/noise.h>
-#include <SFML/Graphics.hpp>
 #include "Block.h"
-#include "MathHelpers.h"
 
 class World;
 
-// TODO: Inherit sf::Drawable and sf::Transformable
-// TODO: Try using vertex arrays, could be faster (also allows for texturing)
-class Chunk
+class Chunk : public sf::Drawable
 {
 public:
-	Chunk(World* world, int world_x, int world_y);
-	~Chunk() = default;
-	
-	Block* GetBlock(int x, int y) const;
-	void SetBlock(int x, int y, Block* block);
+	Chunk(World& world, int world_x, int world_y);
 
-	void Update();
-	void Draw(sf::RenderWindow* window);
+	Block GetBlock(int x, int y) const;
+    void SetBlock(int x, int y, Block block);
 
 private:
-	World* world_;
+    void draw(sf::RenderTarget& target, const sf::RenderStates states) const override;
 
+private:
+    World& world_;
 	const int world_x_;
 	const int world_y_;
 
-	std::vector<Block*> blocks_;
-	sf::Uint8* texture_pixels_;
-	bool is_dirty_;
+	std::vector<Block> blocks_;
+	sf::VertexArray vertices_;
 
-	sf::Texture texture_;
-	sf::Sprite sprite_;
+	/*sf::Font font_;
+	sf::Text text_;*/
 };
