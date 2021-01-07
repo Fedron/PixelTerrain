@@ -10,6 +10,15 @@ vertices_(sf::Quads, world.chunk_width_* world.chunk_height_ * 4)
 {
 }
 
+Block Chunk::GetBlock(const int x, const int y) const
+{
+	// Get block from surrounding chunks if x or y is out or bounds
+	if (x < 0 || x >= world_.chunk_width_ || y < 0 || y >= world_.chunk_height_)
+		return blocks::air;
+
+	return blocks_[x + y * world_.chunk_width_];
+}
+
 void Chunk::SetBlock(const int x, const int y, const Block block)
 {
 	if (x < 0 || x >= world_.chunk_width_ || y < 0 || y >= world_.chunk_height_)

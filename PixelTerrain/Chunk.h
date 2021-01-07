@@ -9,6 +9,7 @@ class Chunk : public sf::Drawable
 public:
 	Chunk(World& world, int world_x, int world_y);
 
+	Block GetBlock(int x, int y) const;
     void SetBlock(int x, int y, Block block);
 
 private:
