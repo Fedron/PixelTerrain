@@ -7,7 +7,7 @@ class World;
 class Chunk : public sf::Drawable
 {
 public:
-	Chunk(World& world);
+	Chunk(World& world, int world_x, int world_y);
 
     void SetBlock(int x, int y, Block block);
 
@@ -16,6 +16,8 @@ private:
 
 private:
     World& world_;
+	const int world_x_;
+	const int world_y_;
 
 	std::vector<Block> blocks_;
 	sf::VertexArray vertices_;

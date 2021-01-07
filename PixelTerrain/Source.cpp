@@ -1,11 +1,15 @@
-#include "Chunk.h"
-#include "World.h"
+#include "GenerationSteps.h"
 
 int main()
 {	
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Pixel Terrain");
 
-    World* world = new World(16, 16, 5, 5, 10);
+    auto* world = new World(
+        16, 16, 5, 5, 10
+    );
+	
+    world->AddGenerationStep(generation_steps::Fill);
+    world->Generate();
 	
     while (window.isOpen())
     {
@@ -26,7 +30,6 @@ int main()
 
     	// Draw calls
         window.clear();
-        //window.draw(&vertices[0], vertices.size(), sf::Quads);
         world->Draw(window);
         window.display();
     }

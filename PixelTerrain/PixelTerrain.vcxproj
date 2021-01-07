@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="Chunk.h" />
+    <ClInclude Include="GenerationSteps.h" />
     <ClInclude Include="MathHelpers.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
