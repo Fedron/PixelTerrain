@@ -20,15 +20,17 @@ vertices_(sf::Quads, world.chunk_width_* world.chunk_height_ * 4)
 
 Block Chunk::GetBlock(const int x, const int y) const
 {
-	// Get block from surrounding chunks if x or y is out or bounds
+	// Return null block if out of bounds
 	if (x < 0 || x >= world_.chunk_width_ || y < 0 || y >= world_.chunk_height_)
-		return blocks::air;
+		return blocks::null;
 
+	// Return block
 	return blocks_[x + y * world_.chunk_width_];
 }
 
 void Chunk::SetBlock(const int x, const int y, const Block block)
 {
+	// Don't try setting a block if out of bounds
 	if (x < 0 || x >= world_.chunk_width_ || y < 0 || y >= world_.chunk_height_)
 		return;
 
@@ -36,13 +38,17 @@ void Chunk::SetBlock(const int x, const int y, const Block block)
 	blocks_[x + y * world_.chunk_width_] = block;
 
 	// Update vertices
+	// Inverted-y to account for top-left being (0, 0) when drawing
 	const int vertex_correct_y = world_.chunk_height_ - y - 1;
+	// Gets the quad of the block in the VertexArray
 	sf::Vertex* quad = &vertices_[(x + vertex_correct_y * world_.chunk_width_) * 4];
 
+	// Calculate the position of the chunk within the world
 	const int world_offset_x = world_x_ * world_.chunk_width_ * world_.block_size_;
 	const int world_offset_y = ((world_.num_chunks_y_ - 1) * world_.chunk_width_ * world_.block_size_) -
 		(world_y_ * world_.chunk_width_ * world_.block_size_);
-	
+
+	// Sets each vertex of the quad to the block's position and color
 	quad[0].position = sf::Vector2f(
 		world_offset_x + (x * world_.block_size_),
 		world_offset_y + (vertex_correct_y * world_.block_size_));
@@ -66,5 +72,6 @@ void Chunk::SetBlock(const int x, const int y, const Block block)
 
 void Chunk::draw(sf::RenderTarget& target, const sf::RenderStates states) const
 {
+	// Draw the VertexArray to the window
 	target.draw(vertices_, states);
 }
