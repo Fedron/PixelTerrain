@@ -53,7 +53,7 @@ double World::GetNoise(const int x, const int y) const
 Block World::GetBlock(const int x, const int y) const
 {
 	if (x < 0 || x >= world_width_ || y < 0 || y >= world_height_)
-		return blocks::air;
+		return blocks::null;
 
 	const int chunk_x = x / chunk_width_;
 	const int chunk_y = y / chunk_height_;

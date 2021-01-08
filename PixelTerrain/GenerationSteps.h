@@ -131,14 +131,14 @@ namespace generation_steps
                         -30, 30
                     );
 
-                    Block new_block =
+                    const Block new_block =
                         world.GetBlock(x + maths::Sign(move_amount), y) != blocks::air ?
                         blocks::air : block;
                     if (move_amount >= 0)
                     {
                         for (int i = 0; i < move_amount; i++)
                         {
-                            const int pos = x + i + y * world.world_width_;
+                            const int pos = (x + i) + y * world.world_width_;
                             if (pos >= world.world_width_ * world.world_height_) break;
                             overhang_terrain[pos] = new_block;
                         }
@@ -147,7 +147,7 @@ namespace generation_steps
                     {
                         for (int i = 0; i > move_amount; i--)
                         {
-                            const int pos = x + i + y * world.world_width_;
+                            const int pos = (x + i) + y * world.world_width_;
                             if (pos >= world.world_width_ * world.world_height_) break;
                             overhang_terrain[pos] = new_block;
                         }

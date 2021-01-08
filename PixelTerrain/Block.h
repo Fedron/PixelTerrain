@@ -13,6 +13,7 @@ struct Block
  
 namespace blocks
 {
+	static Block null{ -1, sf::Color(0, 0, 0, 0) };
 	static Block air{ 0, sf::Color(0, 0, 0, 0) };
 	static Block dirt{ 1, sf::Color(159, 96, 67, 255) };
 	static Block grass{ 2, sf::Color(124, 252, 0, 255) };
