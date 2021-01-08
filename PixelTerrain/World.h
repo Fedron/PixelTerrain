@@ -27,7 +27,10 @@ public:
 		int min_surface_level, int max_surface_level,
 		int grass_layer_height, int dirt_layer_height
 	);
-	~World() = default;
+	/**
+	 * Destructs the world and all the chunks
+	 */
+	~World();
 
 	/**
 	 * Adds a generation task to the list of tasks
@@ -85,6 +88,13 @@ public:
 	void SetBlocks(std::vector<Block> blocks);
 
 	/**
+	 * Gets the font loaded by the world
+	 *
+	 * @returns A reference to the loaded font
+	 */
+	sf::Font& GetFont();
+	
+	/**
 	 * Draws all the chunks to the window
 	 *
 	 * @param window The window to draw to
@@ -119,9 +129,15 @@ public:
 	// libnoise Perlin noise module
 	noise::module::Perlin perlin_noise_;
 
+	// Controls the drawing of debug utils
+	bool debug_mode_ = false;
+
 private:
 	// A list of all the generation tasks
 	std::vector<void (*)(World& world)> generation_tasks_;
 	// A list of all the instantiated chunks (row-major)
 	std::vector<Chunk*> chunks_;
+
+	// Default font for debugging
+	sf::Font font_;
 };

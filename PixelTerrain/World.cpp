@@ -25,6 +25,17 @@ grass_layer_height_(grass_layer_height), dirt_layer_height_(dirt_layer_height)
 			chunks_.emplace_back(new Chunk(*this, chunk_x, chunk_y));
 		}
 	}
+
+	// Load font
+	font_.loadFromFile("font.ttf");
+}
+
+World::~World()
+{
+	for (Chunk* chunk : chunks_)
+	{
+		delete chunk;
+	}
 }
 
 void World::AddGenerationTask(void(*task)(World& world))
@@ -119,6 +130,11 @@ void World::SetBlocks(std::vector<Block> blocks)
 			SetBlock(x, y, blocks[x + y * world_width_]);
 		}
 	}
+}
+
+sf::Font& World::GetFont()
+{
+	return font_;
 }
 
 void World::Draw(sf::RenderWindow& window)

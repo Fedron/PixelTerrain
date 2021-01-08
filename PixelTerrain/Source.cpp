@@ -9,6 +9,7 @@ int main()
     auto* world = new World(
         32, 32, 20, 10, 2, 50, 320, 8, 30
     );
+    world->debug_mode_ = true;
 	
 	// Add all generation steps and generate the world
     world->AddGenerationTask(generation_tasks::HeightMap);
@@ -41,7 +42,7 @@ int main()
         }
 
     	// Draw calls
-        window.clear();
+        window.clear(sf::Color(182, 227, 219, 255));
         world->Draw(window);
         window.display();
     }

@@ -124,7 +124,7 @@ namespace generation_tasks
                 Block block = world.GetBlock(x, y);
 
                 // Checks if the current block is on the surface
-                if (block == blocks::air) continue;
+                if (block == blocks::air || block == blocks::null) continue;
                 bool is_surface_block = false;
                 if (world.GetBlock(x + 1, y) == blocks::air)
                     is_surface_block = true;
