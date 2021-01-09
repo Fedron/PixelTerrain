@@ -150,9 +150,10 @@ namespace generation_tasks
                     	// Positive for-loop
                         for (int i = 0; i < move_amount; i++)
                         {
+                            if (x + i >= world.world_width_ || y >= world.world_height_) break;
+
                         	// Calculates the position of the block in world-space
                             const int pos = (x + i) + y * world.world_width_;
-                            if (pos >= world.world_width_ * world.world_height_) break;
                             overhang_terrain[pos] = new_block;
                         }
                     }
@@ -161,9 +162,10 @@ namespace generation_tasks
                     	// Negative for-loop
                         for (int i = 0; i > move_amount; i--)
                         {
+                            if (x + i < 0 || y < 0) break;
+                        	
                             // Calculates the position of the block in world-space
-                            const int pos = (x + i) + y * world.world_width_;
-                            if (pos >= world.world_width_ * world.world_height_) break;
+                            const int pos = (x + i) + y * world.world_width_;           
                             overhang_terrain[pos] = new_block;
                         }
                     }
@@ -185,7 +187,7 @@ namespace generation_tasks
 		// Get the current system time
         const auto water_start_time = std::chrono::high_resolution_clock::now();
 		// Calculate the world water level
-        const int water_level = rand() % world.max_surface_level_;
+        const int water_level = rand() % static_cast<int>(0.6 * world.max_surface_level_);
 
         // Create the lakes
         for (int x = 0; x < world.world_width_; x++)
