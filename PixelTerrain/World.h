@@ -35,8 +35,8 @@ public:
 	/**
 	 * Responsible for generating terrain in all the chunks
 	 *
-	 * @param settings A World::Settings struct containing all the
-	 *	   parameters for generation
+	 * @param settings A WorldSettings struct containing all the
+	 *     the parameters for generation
 	 */
 	explicit World(WorldSettings settings);
 	/**
@@ -44,6 +44,9 @@ public:
 	 */
 	~World();
 
+	/**
+	 * Reallocates memory for chunks to fit new WorldSettings
+	 */
 	void ResetChunks();
 	
 	/**
@@ -86,7 +89,7 @@ public:
 	 */
 	void SetBlock(int x, int y, Block block);
 
-	// TODO: Returns all blocks in the world (Currently this is too expensive)
+	// TODO: Make it return blocks in a given rect
 	/**
 	 * Gets all the blocks in the world
 	 *
@@ -118,7 +121,9 @@ public:
 
 #pragma region Variables
 public:
+	// Data structure containing settings for generation
 	WorldSettings settings_;
+	// How long (in milliseconds) the previous generation took
 	int generation_time_;
 
 	// Width of the world in blocks
@@ -130,7 +135,8 @@ public:
 	int min_surface_level_;
 	// Maximum y-level at which the surface is found
 	int max_surface_level_;
-	int water_level_;
+	// The global sea-level
+	int sea_level_;
 
 	// libnoise Perlin noise module
 	noise::module::Perlin perlin_noise_;

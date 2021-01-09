@@ -18,6 +18,11 @@ World::~World()
 
 void World::ResetChunks()
 {
+	// Delete previous chunk pointers
+	for (Chunk* chunk : chunks_)
+	{
+		delete chunk;
+	}
 	chunks_.clear();
 	
 	// Reserve memory space
@@ -59,7 +64,7 @@ void World::Generate()
 	srand(settings_.seed);
 
 	// Set water level
-	water_level_ = settings_.min_sea_level + (rand() % (settings_.max_sea_level - settings_.min_sea_level + 1));
+	sea_level_ = settings_.min_sea_level + (rand() % (settings_.max_sea_level - settings_.min_sea_level + 1));
 
 	// Execute all the generation tasks
 	for (auto& generation_task : generation_tasks_)

@@ -192,7 +192,7 @@ namespace generation_tasks
         {
             for (int y = world.min_surface_level_; y < world.world_height_; y++) {
             	// Don't set if above water level, or not air
-                if (y > world.water_level_) break;
+                if (y > world.sea_level_) break;
                 if (world.GetBlock(x, y) != blocks::air) continue;
 
             	// Set the block to water
@@ -205,7 +205,7 @@ namespace generation_tasks
         for (int x = 0; x < world.world_width_; x++)
         {
             bool water_in_col = false;
-            for (int y = world.min_surface_level_ - water_range; y < world.water_level_ + water_range; y++) {
+            for (int y = world.min_surface_level_ - water_range; y < world.sea_level_ + water_range; y++) {
                 Block block = world.GetBlock(x, y);
                 if (block == blocks::air) break;
                 if (block == blocks::grass || block == blocks::dirt)

@@ -1,3 +1,5 @@
+#pragma warning (disable: 4244 4305)
+
 #include "Gui.h"
 #include "World.h"
 
@@ -5,12 +7,24 @@ namespace gui
 {
 	void ShowGenerationSettings(World& world)
 	{
-		if (!ImGui::Begin("Generation Settings"))
+		const ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_MenuBar;
+
+		static bool p_open = false;
+		if (!ImGui::Begin("Generation Settings", &p_open, flags))
 		{
 			ImGui::End();
 			return;
 		}
 
+		// Window setup
+		ImGui::SetWindowPos(ImVec2(0, 0));
+		ImGui::SetWindowSize(ImVec2(
+			500, world.world_height_ * world.settings_.block_size)
+		);
+
+		// Seed settings
 		static bool random_seed = true;
 		ImGui::Checkbox("Use random seed", &random_seed);
 		
@@ -19,13 +33,15 @@ namespace gui
 			ImGui::InputInt("Seed", &seed);
 		
 		ImGui::Spacing();
-		
+
+		// Show all the sections
 		ShowGeneralSettings(world.settings_);
 		ShowSurfaceSettings(world.settings_);
 		ShowWaterSettings(world.settings_);
 
 		ImGui::Spacing(); ImGui::Spacing();
 
+		// Generate button and generation time
 		const int window_width = ImGui::GetWindowSize().x;
 		if (ImGui::Button("Generate", ImVec2(
 			window_width,

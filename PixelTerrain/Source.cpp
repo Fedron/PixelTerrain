@@ -7,7 +7,6 @@ int main()
     ImGui::SFML::Init(window);
 	
 	// Create world
-	// TODO: Make world calculate the chunk_size based on num_chunks and block_size
     auto* world = new World(WorldSettings{
         static_cast<int>(time(nullptr)),
     	32, 32,
@@ -20,7 +19,6 @@ int main()
     	true,
     	40, 250, 5
     });
-    //world->debug_mode_ = true;
 	
 	// Add all generation steps and generate the world
     world->AddGenerationTask(generation_tasks::HeightMap);
