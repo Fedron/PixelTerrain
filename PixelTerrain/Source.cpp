@@ -1,6 +1,4 @@
-#include "imgui.h"
-#include "imgui-SFML.h"
-
+#include "Gui.h"
 #include "GenerationSteps.h"
 
 int main()
@@ -22,7 +20,7 @@ int main()
     world->Generate();
 
 	// Game loop
-    sf::Clock deltaClock;
+    sf::Clock delta_clock;
     while (window.isOpen())
     {
 		// Event handling
@@ -47,11 +45,12 @@ int main()
             }
         }
 
-        ImGui::SFML::Update(window, deltaClock.restart());
+    	// Updates
+        ImGui::SFML::Update(window, delta_clock.restart());
 
-        ImGui::Begin("Hello, world!");
-        ImGui::Button("Look at this pretty button");
-        ImGui::End();
+    	// GUI
+        gui::ShowGenerationSettings(*world);
+        //ImGui::ShowDemoWindow();
     	
     	// Draw calls
         window.clear(sf::Color(182, 227, 219, 255));

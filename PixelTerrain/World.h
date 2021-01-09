@@ -72,7 +72,7 @@ public:
 	 */
 	void SetBlock(int x, int y, Block block);
 
-	// TODO: Returns blocks in a specific chunk (Currently this is too expensive)
+	// TODO: Returns all blocks in the world (Currently this is too expensive)
 	/**
 	 * Gets all the blocks in the world
 	 *
@@ -103,28 +103,28 @@ public:
 
 public:
 	// Width (in blocks) of all chunks
-	const int chunk_width_;
+	int chunk_width_;
 	// Height (in blocks) of all chunks
-	const int chunk_height_;
+	int chunk_height_;
 	// Number of chunks along the width of the world
-	const int num_chunks_x_;
+	int num_chunks_x_;
 	// Number of chunks along the height of the world
-	const int num_chunks_y_;
+	int num_chunks_y_;
 	// The width of the world in blocks
-	const int world_width_;
+	int world_width_;
 	// The height of the world in blocks
-	const int world_height_;
+	int world_height_;
 	// The size of a block in pixels
-	const int block_size_;
+	int block_size_;
 
 	// Minimum y-level at which the surface is found
 	int min_surface_level_;
 	// Maximum y-level at which the surface is found
 	int max_surface_level_;
 	// The thickness of the grass layer
-	const int grass_layer_height_;
+	int grass_layer_height_;
 	// The thickness of the dirt layer
-	const int dirt_layer_height_;
+	int dirt_layer_height_;
 
 	// libnoise Perlin noise module
 	noise::module::Perlin perlin_noise_;
