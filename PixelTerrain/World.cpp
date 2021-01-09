@@ -1,30 +1,8 @@
 #include "World.h"
 
-World::World(
-	const int chunk_width, const int chunk_height,
-	const int num_chunks_x, const int num_chunks_y,
-	const int block_size,
-	const int min_surface_level, const int max_surface_level,
-	const int grass_layer_height, const int dirt_layer_height
-) :
-chunk_width_(chunk_width), chunk_height_(chunk_height),
-num_chunks_x_(num_chunks_x), num_chunks_y_(num_chunks_y),
-world_width_(chunk_width * num_chunks_x), world_height_(chunk_height * num_chunks_y),
-block_size_(block_size),
-min_surface_level_(min_surface_level), max_surface_level_(max_surface_level),
-grass_layer_height_(grass_layer_height), dirt_layer_height_(dirt_layer_height)
+World::World(const WorldSettings settings)
 {
-	// Reserve memory space
-	chunks_.reserve(num_chunks_x_ * num_chunks_y_);
-	// Create empty chunks
-	for (int chunk_y = 0; chunk_y < num_chunks_y_; chunk_y++)
-	{
-		for (int chunk_x = 0; chunk_x < num_chunks_x_; chunk_x++)
-		{
-			// Create a new chunk
-			chunks_.emplace_back(new Chunk(*this, chunk_x, chunk_y));
-		}
-	}
+	settings_ = settings;
 
 	// Load font
 	font_.loadFromFile("font.ttf");
@@ -38,6 +16,23 @@ World::~World()
 	}
 }
 
+void World::ResetChunks()
+{
+	chunks_.clear();
+	
+	// Reserve memory space
+	chunks_.reserve(settings_.num_chunks_x * settings_.num_chunks_y);
+	// Create empty chunks
+	for (int chunk_y = 0; chunk_y < settings_.num_chunks_y; chunk_y++)
+	{
+		for (int chunk_x = 0; chunk_x < settings_.num_chunks_x; chunk_x++)
+		{
+			// Create a new chunk
+			chunks_.emplace_back(new Chunk(*this, chunk_x, chunk_y));
+		}
+	}
+}
+
 void World::AddGenerationTask(void(*task)(World& world))
 {
 	// Adds the task to the end of the list
@@ -46,10 +41,25 @@ void World::AddGenerationTask(void(*task)(World& world))
 
 void World::Generate()
 {
+	// Recalculate necessary values
+	world_width_ = settings_.num_chunks_x * settings_.chunk_width;
+	world_height_ = settings_.num_chunks_y * settings_.chunk_height;
+
+	min_surface_level_ = settings_.min_surface_level;
+	max_surface_level_ = settings_.max_surface_level;
+
+	ResetChunks();
+	
 	// Get current time
 	const auto start_time = std::chrono::high_resolution_clock::now();
-	// Set seed to current time
-	perlin_noise_.SetSeed(time(nullptr));
+	
+	// Set seeds to current time
+	settings_.seed = time(nullptr);
+	perlin_noise_.SetSeed(settings_.seed);
+	srand(settings_.seed);
+
+	// Set water level
+	water_level_ = settings_.min_sea_level + (rand() % (settings_.max_sea_level - settings_.min_sea_level + 1));
 
 	// Execute all the generation tasks
 	for (auto& generation_task : generation_tasks_)
@@ -60,7 +70,7 @@ void World::Generate()
 	// Calculate how long generation took
 	const auto end_time = std::chrono::high_resolution_clock::now();
 	const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-	std::cout << "Generation completed in " << duration.count() << "ms" << std::endl;
+	generation_time_ = duration.count();
 }
 
 double World::GetNoise(const int x, const int y) const
@@ -76,13 +86,13 @@ Block World::GetBlock(const int x, const int y) const
 		return blocks::null;
 
 	// Calculate the chunk in which block is located
-	const int chunk_x = x / chunk_width_;
-	const int chunk_y = y / chunk_height_;
+	const int chunk_x = x / settings_.chunk_width;
+	const int chunk_y = y / settings_.chunk_height;
 
 	// Get the chunk
-	const Chunk* chunk = chunks_[chunk_x + chunk_y * num_chunks_x_];
+	const Chunk* chunk = chunks_[chunk_x + chunk_y * settings_.num_chunks_x];
 	// Convert global coordinates to local chunk coordinates and get the block
-	return chunk->GetBlock(x - (chunk_x * chunk_width_), y - (chunk_y * chunk_height_));
+	return chunk->GetBlock(x - (chunk_x * settings_.chunk_width), y - (chunk_y * settings_.chunk_height));
 }
 
 void World::SetBlock(const int x, const int y, const Block block)
@@ -92,13 +102,13 @@ void World::SetBlock(const int x, const int y, const Block block)
 		return;
 
 	// Calculate the chunk coordinates
-	const int chunk_x = x / chunk_width_;
-	const int chunk_y = y / chunk_height_;
+	const int chunk_x = x / settings_.chunk_width;
+	const int chunk_y = y / settings_.chunk_height;
 
 	// Get the chunk
-	Chunk* chunk = chunks_[chunk_x + chunk_y * num_chunks_x_];
+	Chunk* chunk = chunks_[chunk_x + chunk_y * settings_.num_chunks_x];
 	// Convert global coordinates to local chunk coordinates and set the block
-	chunk->SetBlock(x - (chunk_x * chunk_width_), y - (chunk_y * chunk_height_), block);
+	chunk->SetBlock(x - (chunk_x * settings_.chunk_width), y - (chunk_y * settings_.chunk_height), block);
 }
 
 std::vector<Block> World::GetBlocks() const

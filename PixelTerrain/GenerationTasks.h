@@ -16,7 +16,7 @@ namespace generation_tasks
 		{
 			for (int y = 0; y < world.world_height_; y++)
 			{
-				if (y < world.chunk_height_)
+				if (y < world.settings_.chunk_height)
                     world.SetBlock(x, y, blocks::dirt);
 			}
 		}
@@ -29,7 +29,7 @@ namespace generation_tasks
      */
     inline void HeightMap(World& world)
     {
-        world.perlin_noise_.SetFrequency(1);
+        world.perlin_noise_.SetFrequency(world.settings_.surface_smoothness);
 
         // Height-map generation
         for (int x = 0; x < world.world_width_; x++)
@@ -44,13 +44,13 @@ namespace generation_tasks
             const int grass_height = maths::Remap(
                 world.GetNoise(x, 10000),
                 -1, 1,
-                surface_height - world.grass_layer_height_, surface_height);
+                surface_height - world.settings_.grass_layer_thickness, surface_height);
 
         	// Dirt thickness of the column
             const int dirt_height = maths::Remap(
                 world.GetNoise(x, 20000),
                 -1, 1,
-                grass_height - world.dirt_layer_height_, grass_height - 5);
+                grass_height - world.settings_.dirt_layer_thickness, grass_height - 5);
 
             for (int y = 0; y < world.world_height_; y++)
             {
@@ -114,7 +114,7 @@ namespace generation_tasks
      */
     inline void Overhangs(World& world)
     {
-        world.perlin_noise_.SetFrequency(10);
+        world.perlin_noise_.SetFrequency(world.settings_.overhang_roughness);
 
 		// Copy of the terrain to adjust
         std::vector<Block> overhang_terrain = world.GetBlocks();
@@ -184,17 +184,15 @@ namespace generation_tasks
      */
     inline void Water(World& world)
     {
-		// Get the current system time
-        const auto water_start_time = std::chrono::high_resolution_clock::now();
-		// Calculate the world water level
-        const int water_level = rand() % static_cast<int>(0.6 * world.max_surface_level_);
+        if (!world.settings_.generate_water)
+            return;
 
         // Create the lakes
         for (int x = 0; x < world.world_width_; x++)
         {
             for (int y = world.min_surface_level_; y < world.world_height_; y++) {
             	// Don't set if above water level, or not air
-                if (y > water_level) break;
+                if (y > world.water_level_) break;
                 if (world.GetBlock(x, y) != blocks::air) continue;
 
             	// Set the block to water
@@ -202,20 +200,12 @@ namespace generation_tasks
             }
         }
 
-		// Calculate how long lake generation took
-        const auto water_end_time = std::chrono::high_resolution_clock::now();
-        const auto water_duration = std::chrono::duration_cast<std::chrono::milliseconds>(water_end_time - water_start_time);
-        std::cout << "Water generation completed in " << water_duration.count() << "ms" << std::endl;
-
-        // Get current system time
-        const auto sand_start_time = std::chrono::high_resolution_clock::now();
-
         // Replace grass and dirt near water with sand
         const int water_range = 30;
         for (int x = 0; x < world.world_width_; x++)
         {
             bool water_in_col = false;
-            for (int y = world.min_surface_level_ - water_range; y < water_level + water_range; y++) {
+            for (int y = world.min_surface_level_ - water_range; y < world.water_level_ + water_range; y++) {
                 Block block = world.GetBlock(x, y);
                 if (block == blocks::air) break;
                 if (block == blocks::grass || block == blocks::dirt)
@@ -258,10 +248,5 @@ namespace generation_tasks
             if (!water_in_col)
                 x += water_range - 1;
         }
-
-		// Calculates how long the sand generation took
-        const auto sand_end_time = std::chrono::high_resolution_clock::now();
-        const auto sand_duration = std::chrono::duration_cast<std::chrono::milliseconds>(sand_end_time - sand_start_time);
-        std::cout << "Sand generation completed in " << sand_duration.count() << "ms" << std::endl;
     }
 }

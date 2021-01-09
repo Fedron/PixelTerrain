@@ -4,34 +4,48 @@
 #include "Chunk.h"
 #include "noise/noise.h"
 
+struct WorldSettings
+{
+	int seed;
+
+	int chunk_width;
+	int chunk_height;
+	int num_chunks_x;
+	int num_chunks_y;
+	int block_size;
+
+	float surface_smoothness;
+	int min_surface_level;
+	int max_surface_level;
+	int grass_layer_thickness;
+	int dirt_layer_thickness;
+	float overhang_roughness;
+	int overhang_amount;
+
+	bool generate_water;
+	int min_sea_level;
+	int max_sea_level;
+	int sand_range;
+};
+
 class World
 {
+#pragma region Methods
 public:
 	/**
 	 * Responsible for generating terrain in all the chunks
 	 *
-	 * @param chunk_width Width of a chunk in blocks
-	 * @param chunk_height Height of a chunk in blocks
-	 * @param num_chunks_x The number of chunks along the width of the world
-	 * @param num_chunks_y The number of chunks along the height of the world
-	 * @param block_size Pixel size of each block
-	 * @param min_surface_level Minimum y-level (in blocks) at which the surface can generate
-	 * @param max_surface_level Maximum y-level (in block) at which the surface can generate
-	 * @param grass_layer_height The thickness (in blocks) of the grass layer
-	 * @param dirt_layer_height The thickness (in blocks) of the dirt layer
+	 * @param settings A World::Settings struct containing all the
+	 *	   parameters for generation
 	 */
-	World(
-		int chunk_width, int chunk_height,
-		int num_chunks_x, int num_chunks_y,
-		int block_size,
-		int min_surface_level, int max_surface_level,
-		int grass_layer_height, int dirt_layer_height
-	);
+	explicit World(WorldSettings settings);
 	/**
 	 * Destructs the world and all the chunks
 	 */
 	~World();
 
+	void ResetChunks();
+	
 	/**
 	 * Adds a generation task to the list of tasks
 	 *
@@ -100,31 +114,23 @@ public:
 	 * @param window The window to draw to
 	 */
 	void Draw(sf::RenderWindow& window);
+#pragma endregion
 
+#pragma region Variables
 public:
-	// Width (in blocks) of all chunks
-	int chunk_width_;
-	// Height (in blocks) of all chunks
-	int chunk_height_;
-	// Number of chunks along the width of the world
-	int num_chunks_x_;
-	// Number of chunks along the height of the world
-	int num_chunks_y_;
-	// The width of the world in blocks
+	WorldSettings settings_;
+	int generation_time_;
+
+	// Width of the world in blocks
 	int world_width_;
-	// The height of the world in blocks
+	// Height of the world in blocks
 	int world_height_;
-	// The size of a block in pixels
-	int block_size_;
 
 	// Minimum y-level at which the surface is found
 	int min_surface_level_;
 	// Maximum y-level at which the surface is found
 	int max_surface_level_;
-	// The thickness of the grass layer
-	int grass_layer_height_;
-	// The thickness of the dirt layer
-	int dirt_layer_height_;
+	int water_level_;
 
 	// libnoise Perlin noise module
 	noise::module::Perlin perlin_noise_;
@@ -140,4 +146,5 @@ private:
 
 	// Default font for debugging
 	sf::Font font_;
+#pragma endregion 
 };

@@ -65,10 +65,10 @@
     <ClInclude Include="Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GenerationSteps.h">
+    <ClInclude Include="Gui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Gui.h">
+    <ClInclude Include="GenerationTasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

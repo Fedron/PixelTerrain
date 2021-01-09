@@ -1,5 +1,5 @@
 #include "Gui.h"
-#include "GenerationSteps.h"
+#include "GenerationTasks.h"
 
 int main()
 {	
@@ -8,9 +8,18 @@ int main()
 	
 	// Create world
 	// TODO: Make world calculate the chunk_size based on num_chunks and block_size
-    auto* world = new World(
-        32, 32, 20, 10, 2, 50, 320, 8, 30
-    );
+    auto* world = new World(WorldSettings{
+        static_cast<int>(time(nullptr)),
+    	32, 32,
+    	20, 11,
+    	2,
+    	1,
+    	50, 320,
+    	5, 20,
+    	10, 30,
+    	true,
+    	40, 250, 5
+    });
     //world->debug_mode_ = true;
 	
 	// Add all generation steps and generate the world
@@ -32,12 +41,6 @@ int main()
             {
             case sf::Event::Closed:
                 window.close();
-                break;
-
-            case sf::Event::KeyPressed:
-                // Regenerate world
-                if (event.key.code == sf::Keyboard::Space)
-                    world->Generate();
                 break;
 
             default:
