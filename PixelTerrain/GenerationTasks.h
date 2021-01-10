@@ -16,7 +16,7 @@ namespace generation_tasks
 		{
 			for (int y = 0; y < world.world_height_; y++)
 			{
-				if (y < world.settings_.chunk_height)
+				if (y < world.gen_settings_.chunk_height)
                     world.SetBlock(x, y, blocks::dirt);
 			}
 		}
@@ -29,7 +29,7 @@ namespace generation_tasks
      */
     inline void HeightMap(World& world)
     {
-        world.perlin_noise_.SetFrequency(world.settings_.surface_smoothness);
+        world.perlin_noise_.SetFrequency(world.gen_settings_.surface_smoothness);
 
         // Height-map generation
         for (int x = 0; x < world.world_width_; x++)
@@ -44,13 +44,13 @@ namespace generation_tasks
             const int grass_height = maths::Remap(
                 world.GetNoise(x, 10000),
                 -1, 1,
-                surface_height - world.settings_.grass_layer_thickness, surface_height);
+                surface_height - world.gen_settings_.grass_layer_thickness, surface_height);
 
         	// Dirt thickness of the column
             const int dirt_height = maths::Remap(
                 world.GetNoise(x, 20000),
                 -1, 1,
-                grass_height - world.settings_.dirt_layer_thickness, grass_height - 5);
+                grass_height - world.gen_settings_.dirt_layer_thickness, grass_height - 5);
 
             for (int y = 0; y < world.world_height_; y++)
             {
@@ -114,7 +114,7 @@ namespace generation_tasks
      */
     inline void Overhangs(World& world)
     {
-        world.perlin_noise_.SetFrequency(world.settings_.overhang_roughness);
+        world.perlin_noise_.SetFrequency(world.gen_settings_.overhang_roughness);
 
 		// Copy of the terrain to adjust
         std::vector<Block> overhang_terrain = world.GetBlocks();
@@ -184,7 +184,7 @@ namespace generation_tasks
      */
     inline void Water(World& world)
     {
-        if (!world.settings_.generate_water)
+        if (!world.gen_settings_.generate_water)
             return;
 
         // Create the lakes

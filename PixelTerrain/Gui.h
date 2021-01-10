@@ -32,7 +32,7 @@ namespace gui
 	 * @param world Reference to the world which the GUI belong to
 	 * @param window_size Size of the application window
 	 */
-	void ShowGenerationSettings(sf::Vector2i& window_size, World& world);
+	void ShowWorldSettings(sf::Vector2i& window_size, World& world);
 
 	/**
 	 * Renders the general settings section

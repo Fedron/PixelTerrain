@@ -7,6 +7,7 @@ class World;
 
 class Chunk : public sf::Drawable
 {
+#pragma region Methods
 public:
 	/**
 	 * Small individual container of blocks in the world
@@ -47,7 +48,9 @@ private:
 	 * SFML draw function, draws to the window
 	 */
     void draw(sf::RenderTarget& target, const sf::RenderStates states) const override;
+#pragma endregion 
 
+#pragma region Variables
 private:
 	// Reference to the world in which this chunk is in
     World& world_;
@@ -68,4 +71,5 @@ private:
 	sf::Text coords_text_;
 	// Text used to display if the chunk is being updated
 	sf::Text update_text_;
+#pragma endregion
 };

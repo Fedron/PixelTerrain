@@ -8,6 +8,7 @@
  */
 class SpriteSheet
 {
+#pragma region Methods
 public:
 	/**
 	 * Creates an empty sprite sheet
@@ -59,10 +60,13 @@ public:
 	 * @returns A pointer to the sprite
 	 */
 	sf::Sprite* GetSprite(std::string name);
+#pragma endregion
 
+#pragma region Variables
 private:
 	// Sprite sheet texture
 	sf::Texture sprite_sheet_;
 	// List of all the sprites, with a named key
 	std::unordered_map<std::string, sf::Sprite*> sprites_;
+#pragma endregion
 };

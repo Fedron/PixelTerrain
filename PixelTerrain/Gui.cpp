@@ -86,7 +86,7 @@ namespace gui
 		ImGui::End();
 	}
 
-	void ShowGenerationSettings(sf::Vector2i& window_size, World& world)
+	void ShowWorldSettings(sf::Vector2i& window_size, World& world)
 	{
 		const ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
@@ -114,10 +114,19 @@ namespace gui
 		
 		ImGui::Spacing();
 
-		// Show all the sections
-		ShowGeneralSettings(world.settings_);
-		ShowSurfaceSettings(world.settings_);
-		ShowWaterSettings(world.settings_);
+		const int greater_num = world.gen_settings_.num_chunks_x < world.gen_settings_.num_chunks_y ?
+			world.gen_settings_.num_chunks_y : world.gen_settings_.num_chunks_x;
+		ImGui::SliderInt("Render Range", &world.render_range_, 1, greater_num);
+		ImGui::SameLine(); HelpMarker(
+			"Half-extends of the square in which chunks are rendered"
+		);
+		
+		ImGui::Spacing();
+
+		// Show all the generation sections
+		ShowGeneralSettings(world.gen_settings_);
+		ShowSurfaceSettings(world.gen_settings_);
+		ShowWaterSettings(world.gen_settings_);
 
 		ImGui::Spacing(); ImGui::Spacing();
 

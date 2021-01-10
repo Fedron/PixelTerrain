@@ -43,7 +43,7 @@ public:
 	 * @param settings A WorldSettings struct containing all the
 	 *     the parameters for generation
 	 */
-	explicit World(WorldSettings settings);
+	explicit World(WorldSettings settings, int render_range);
 	/**
 	 * Destructs the world and all the chunks
 	 */
@@ -126,10 +126,24 @@ public:
 
 #pragma region Variables
 public:
-	// Data structure containing settings for generation
+	/*
+	 * Data structure containing settings that were used when the
+	 * world was generated.
+	 *
+	 * These settings can be adjusted from the GUI and so do not contain
+	 * current world values
+	 */
+	WorldSettings gen_settings_;
+
+	/**
+	 * Current settings in use by the world
+	 */
 	WorldSettings settings_;
 	// How long (in milliseconds) the previous generation took
 	int generation_time_;
+
+	// The half-extends of the square in which chunks are rendered
+	int render_range_;
 
 	// Width of the world in blocks
 	int world_width_;

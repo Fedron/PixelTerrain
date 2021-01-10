@@ -1,3 +1,5 @@
+#pragma warning (disable: 4244)
+
 #include "GenerationTasks.h"
 #include "Gui.h"
 
@@ -27,7 +29,7 @@ int main()
     	10, 30,
     	true,
     	40, 250, 5
-    });
+    }, 10);
 	
 	// Add all generation steps and generate the world
     world->AddGenerationTask(generation_tasks::HeightMap);
@@ -189,7 +191,7 @@ int main()
         gui::ShowViewSettings(view_move_speed, main_view.getCenter());
     	
     	if (show_settings)
-			gui::ShowGenerationSettings(window_size, *world);
+			gui::ShowWorldSettings(window_size, *world);
 
         //ImGui::ShowDemoWindow();
     	
