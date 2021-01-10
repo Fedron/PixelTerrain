@@ -4,6 +4,9 @@
 #include "Chunk.h"
 #include "noise/noise.h"
 
+/**
+ * Contains generation settings for the world
+ */
 struct WorldSettings
 {
 	int seed;
@@ -28,13 +31,15 @@ struct WorldSettings
 	int sand_range;
 };
 
+/**
+ * Container for all the chunks
+ * Manages the generation of the all the chunks
+ */
 class World
 {
 #pragma region Methods
 public:
 	/**
-	 * Responsible for generating terrain in all the chunks
-	 *
 	 * @param settings A WorldSettings struct containing all the
 	 *     the parameters for generation
 	 */

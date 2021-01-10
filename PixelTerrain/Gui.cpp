@@ -19,9 +19,12 @@ namespace gui
 		}
 
 		// Window setup
-		ImGui::SetWindowPos(ImVec2(0, 0));
+		ImGui::SetWindowPos(ImVec2(
+			 1280- ImGui::GetWindowWidth(),
+			0
+		));
 		ImGui::SetWindowSize(ImVec2(
-			500, world.world_height_ * world.settings_.block_size)
+			500, 640)
 		);
 
 		// Seed settings
@@ -42,9 +45,8 @@ namespace gui
 		ImGui::Spacing(); ImGui::Spacing();
 
 		// Generate button and generation time
-		const int window_width = ImGui::GetWindowSize().x;
 		if (ImGui::Button("Generate", ImVec2(
-			window_width,
+			ImGui::GetWindowWidth(),
 			20
 		)))
 		{
