@@ -17,6 +17,14 @@ namespace gui
 	 * @param active_block Reference to the active block
 	 */
 	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block& active_block);
+
+	/**
+	 * Shows settings for moving the view
+	 *
+	 * @param move_speed Reference to the move speed of the view
+	 * @param view_center The center of the view
+	 */
+	void ShowViewSettings(float& move_speed, sf::Vector2f view_center);
 	
 	/**
 	 * Shows the main ImGui panel

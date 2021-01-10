@@ -3,10 +3,17 @@
 
 int main()
 {
+	// Setup window
     sf::Vector2i window_size(1280, 640);
-	
     sf::RenderWindow window(sf::VideoMode(window_size.x, window_size.y), "Pixel Terrain");
     ImGui::SFML::Init(window);
+
+    // Setup view
+    sf::View main_view(sf::FloatRect(
+        0, 0,
+        window_size.x, window_size.y
+    ));
+    window.setView(main_view);
 	
 	// Create world
     auto* world = new World(WorldSettings{
@@ -30,7 +37,10 @@ int main()
 
     // Game loop variables
     sf::Clock delta_clock;
+    float delta_time;
     bool show_settings = true;
+
+    float view_move_speed = 300;
 
     Block active_block = blocks::dirt;
     int brush_size = 4;
@@ -42,11 +52,15 @@ int main()
 	// Game loop
     while (window.isOpen())
     {
+        delta_time = delta_clock.getElapsedTime().asSeconds();
+    	
 		// Event handling
         sf::Event event;
+        ImGuiIO io = ImGui::GetIO();
         while (window.pollEvent(event))
         {
             ImGui::SFML::ProcessEvent(event);
+
             switch (event.type)
             {
             case sf::Event::Closed:
@@ -54,12 +68,24 @@ int main()
                 break;
 
             case sf::Event::KeyPressed:
+                if (io.WantCaptureKeyboard) break;
+                
+                switch (event.key.code)
+                {
                 // Toggle visibility of generation settings
-                if (event.key.code == sf::Keyboard::Escape)
+                case sf::Keyboard::Escape:
                     show_settings = !show_settings;
+                    break;
+                
+                default:
+                    break;
+                }
+                    
                 break;
 
             case sf::Event::MouseButtonPressed:
+                if (io.WantCaptureMouse) break;
+                
                 if (event.mouseButton.button == sf::Mouse::Button::Left)
                     left_mouse_button_held = true;
 
@@ -68,6 +94,8 @@ int main()
                 break;
 
             case sf::Event::MouseButtonReleased:
+                if (io.WantCaptureMouse) break;
+                
                 if (event.mouseButton.button == sf::Mouse::Button::Left)
                     left_mouse_button_held = false;
 
@@ -75,12 +103,56 @@ int main()
                     right_mouse_button_held = false;
                 break;
 
+            case sf::Event::MouseWheelScrolled:
+                if (io.WantCaptureMouse) break;
+                
+                // Zoom the view
+                if (maths::Sign(event.mouseWheelScroll.delta) == 1)
+                    main_view.zoom(0.95);
+                else if (maths::Sign(event.mouseWheelScroll.delta) == -1)
+                    main_view.zoom(1.05);
+                break;
+
             default:
                 break;
             }
         }
 
-        mouse_pos = sf::Mouse::getPosition(window);
+    	// Transform view
+    	if (!io.WantCaptureKeyboard)
+    	{
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) ||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                main_view.move(0, -view_move_speed * delta_time);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                main_view.move(-view_move_speed * delta_time, 0);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) ||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+                main_view.move(0, view_move_speed * delta_time);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                main_view.move(view_move_speed * delta_time, 0);
+
+            window.setView(main_view);
+    	}
+
+        // Update mouse buttons
+    	if (io.WantCaptureKeyboard)
+    	{
+            left_mouse_button_held = false;
+            right_mouse_button_held = false;
+    	}
+    	
+    	// Update mouse position in terms of block position
+    	sf::Vector2f window_mouse_pos = window.mapPixelToCoords(
+            sf::Mouse::getPosition(window
+        ));
+        mouse_pos = sf::Vector2i(
+            window_mouse_pos.x,
+            window_mouse_pos.y
+        );
+    	
     	// Convert window pixels to world coordinates
         mouse_pos.x /= 2;
         mouse_pos.y /= 2;
@@ -114,6 +186,7 @@ int main()
 
     	// GUI
         gui::ShowBrushSettings(window_size, brush_size, active_block);
+        gui::ShowViewSettings(view_move_speed, main_view.getCenter());
     	
     	if (show_settings)
 			gui::ShowGenerationSettings(window_size, *world);

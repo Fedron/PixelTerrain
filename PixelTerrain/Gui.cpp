@@ -54,6 +54,38 @@ namespace gui
 		ImGui::End();
 	}
 
+	void ShowViewSettings(float& move_speed, const sf::Vector2f view_center)
+	{
+		const ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar;
+
+		static bool open = true;
+		if (!ImGui::Begin("View Settings", &open))
+		{
+			ImGui::End();
+			return;
+		}
+
+		// Window Setup
+		ImGui::SetWindowSize(
+			ImVec2(160, 100)
+		);
+
+		ImGui::Text("Move Speed");
+		ImGui::SliderFloat("", &move_speed, 0, 5000, "%.1f");
+
+		ImGui::Spacing();
+
+		ImGui::Text(
+			std::string("View Center: " +\
+				std::to_string(static_cast<int>(view_center.x)) +\
+				", " +\
+				std::to_string(static_cast<int>(view_center.y))).c_str()
+		);
+
+		ImGui::End();
+	}
+
 	void ShowGenerationSettings(sf::Vector2i& window_size, World& world)
 	{
 		const ImGuiWindowFlags flags =
