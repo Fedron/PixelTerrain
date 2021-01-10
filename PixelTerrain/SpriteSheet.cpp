@@ -12,9 +12,9 @@ SpriteSheet::SpriteSheet(const std::string filename)
 
 SpriteSheet::~SpriteSheet()
 {
-	for (sf::Sprite* sprite : sprites_)
+	for (auto sprite : sprites_)
 	{
-		delete sprite;
+		delete sprite.second;
 	}
 }
 
@@ -24,12 +24,12 @@ void SpriteSheet::LoadSpriteSheet(const std::string filename)
 		throw;
 }
 
-void SpriteSheet::CreateSprite(const int left, const int top, const int width, const int height, const int scale_factor)
+void SpriteSheet::CreateSprite(const std::string name, const int left, const int top, const int width, const int height, const int scale_factor)
 {
-	CreateSprite(sf::IntRect(left, top, width, height), scale_factor);
+	CreateSprite(name, sf::IntRect(left, top, width, height), scale_factor);
 }
 
-void SpriteSheet::CreateSprite(const sf::IntRect rect, const int scale_factor)
+void SpriteSheet::CreateSprite(const std::string name, const sf::IntRect rect, const int scale_factor)
 {
 	auto* new_sprite = new sf::Sprite(
 		sprite_sheet_,
@@ -38,13 +38,10 @@ void SpriteSheet::CreateSprite(const sf::IntRect rect, const int scale_factor)
 
 	new_sprite->setScale(scale_factor, scale_factor);
 	
-	sprites_.emplace_back(new_sprite);
+	sprites_.emplace(name, new_sprite);
 }
 
-sf::Sprite* SpriteSheet::GetSprite(const unsigned int index)
+sf::Sprite* SpriteSheet::GetSprite(const std::string name)
 {
-	if (index >= sprites_.size())
-		return nullptr;
-
-	return sprites_[index];
+	return sprites_.find(name)->second;
 }

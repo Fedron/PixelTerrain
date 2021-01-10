@@ -1,6 +1,5 @@
 #include "GenerationTasks.h"
 #include "Gui.h"
-#include "SpriteSheet.h"
 
 int main()
 {	
@@ -26,10 +25,6 @@ int main()
     world->AddGenerationTask(generation_tasks::Overhangs);
     world->AddGenerationTask(generation_tasks::Water);
     world->Generate();
-
-    auto* clouds = new SpriteSheet("Sprites/clouds.png");
-    clouds->CreateSprite(1, 27, 29, 10, world->settings_.block_size);
-    clouds->CreateSprite(1, 1, 4, 2, world->settings_.block_size);
 	
 	// Game loop
     sf::Clock delta_clock;
@@ -61,7 +56,6 @@ int main()
     	// Draw calls
         window.clear(sf::Color(182, 227, 219, 255));
         world->Draw(window);
-        window.draw(*clouds->GetSprite(0));
         ImGui::SFML::Render(window);
         window.display();
     }

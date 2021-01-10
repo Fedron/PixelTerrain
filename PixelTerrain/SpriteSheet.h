@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <unordered_map>
 #include <SFML/Graphics.hpp>
 
 /**
@@ -34,33 +34,35 @@ public:
 	/**
 	 * Creates an individual sprite from texture with the given rect
 	 *
+	 * @param name The name of the sprite (converted to all lowercase)
 	 * @param left The left side of the sprite
 	 * @param top The top side of the sprite
 	 * @param width The width of the sprite
 	 * @param height The height of the sprite
 	 * @param scale_factor Scale factor of the sprite
 	 */
-	void CreateSprite(int left, int top, int width, int height, int scale_factor = 1);
+	void CreateSprite(std::string name, int left, int top, int width, int height, int scale_factor = 1);
 
 	/**
 	 * Creates an individual sprite from texture with the given rect
 	 *
+	 * @param name The name of the sprite (converted to lowercase)
 	 * @param rect The rect of the sprite
 	 * @param scale_factor Scale factor of the sprite
 	 */
-	void CreateSprite(sf::IntRect rect, int scale_factor = 1);
+	void CreateSprite(std::string name, sf::IntRect rect, int scale_factor = 1);
 
 	/**
-	 * Gets the sprite at the given index
+	 * Gets the sprite with the given name
 	 *
-	 * @param index Index of the sprite
+	 * @param name Name of hte sprite to get
 	 * @returns A pointer to the sprite
 	 */
-	sf::Sprite* GetSprite(unsigned int index);
+	sf::Sprite* GetSprite(std::string name);
 
 private:
 	// Sprite sheet texture
 	sf::Texture sprite_sheet_;
-	// List of all the sprites
-	std::vector<sf::Sprite*> sprites_;
+	// List of all the sprites, with a named key
+	std::unordered_map<std::string, sf::Sprite*> sprites_;
 };
