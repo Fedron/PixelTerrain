@@ -5,28 +5,73 @@
 
 namespace gui
 {
-	void ShowGenerationSettings(World& world)
+	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block& active_block)
 	{
 		const ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_MenuBar;
-
-		static bool p_open = false;
-		if (!ImGui::Begin("Generation Settings", &p_open, flags))
+			ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
+		
+		static bool open = true;
+		if (!ImGui::Begin("Brush Settings", &open, flags))
 		{
 			ImGui::End();
 			return;
 		}
 
-		// Window setup
+		// Window Setup
+		ImGui::SetWindowSize(
+			ImVec2(130, 140)
+		);
+
 		ImGui::SetWindowPos(ImVec2(
-			 1280- ImGui::GetWindowWidth(),
-			0
+			0,
+			window_size.y - 140
 		));
+		
+		ImGui::Text("Brush size");
+		ImGui::SliderInt("", &brush_size, 1, 20);
+
+		ImGui::Spacing();
+
+		ImGui::Text("Active block");
+		const char* blocks[] = { "Dirt", "Grass", "Stone", "Sand", "Water" };
+		static int selected_block = 0;
+		ImGui::Combo(" ", &selected_block, blocks, IM_ARRAYSIZE(blocks));
+
+		// Set active_block depending on selected_block
+		// TODO: Improve this, could be done in a neater way
+		if (selected_block == 0)
+			active_block = blocks::dirt;
+		else if (selected_block == 1)
+			active_block = blocks::grass;
+		else if (selected_block == 2)
+			active_block = blocks::stone;
+		else if (selected_block == 3)
+			active_block = blocks::sand;
+		else if (selected_block == 4)
+			active_block = blocks::water;
+		
+		ImGui::End();
+	}
+
+	void ShowGenerationSettings(sf::Vector2i& window_size, World& world)
+	{
+		const ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_MenuBar;
+		
+		static bool open = true;
+		if (!ImGui::Begin("Generation Settings", &open, flags))
+		{			
+			ImGui::End();
+			return;
+		}
+
+		// Window setup
 		ImGui::SetWindowSize(ImVec2(
 			500, 640)
 		);
-
+		
 		// Seed settings
 		static bool random_seed = true;
 		ImGui::Checkbox("Use random seed", &random_seed);
@@ -53,6 +98,11 @@ namespace gui
 			world.Generate();
 		}
 		CenterText(std::string("World generated in " + std::to_string(world.generation_time_) + "ms"));
+
+		ImGui::SetWindowPos(ImVec2(
+			1280 - ImGui::GetWindowWidth(),
+			0
+		));
 		
 		ImGui::End();
 	}

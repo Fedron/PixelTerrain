@@ -4,16 +4,27 @@
 #include "imgui.h"
 
 class World;
+struct Block;
 struct WorldSettings;
 
 namespace gui
 {
 	/**
+	 * Shows a panel for the brush settings
+	 *
+	 * @param window_size Size of the application window
+	 * @param brush_size Reference to the brush size
+	 * @param active_block Reference to the active block
+	 */
+	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block& active_block);
+	
+	/**
 	 * Shows the main ImGui panel
 	 *
 	 * @param world Reference to the world which the GUI belong to
+	 * @param window_size Size of the application window
 	 */
-	void ShowGenerationSettings(World& world);
+	void ShowGenerationSettings(sf::Vector2i& window_size, World& world);
 
 	/**
 	 * Renders the general settings section
