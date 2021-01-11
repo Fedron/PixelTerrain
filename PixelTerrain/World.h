@@ -110,12 +110,7 @@ public:
 	 */
 	void SetBlocks(std::vector<Block> blocks);
 
-	/**
-	 * Updates the world lighting within the view
-	 *
-	 * @param view View within which to calculate lighting
-	 */
-	void UpdateLighting(const sf::View& view);
+	sf::Shader& GetShader();
 	
 	/**
 	 * Draws all the chunks to the window
@@ -167,8 +162,6 @@ private:
 	// A list of all the instantiated chunks (row-major)
 	std::vector<Chunk*> chunks_;
 
-	sf::Uint8* lighting_pixels_;
-	sf::Texture lighting_tex_;
-	sf::Sprite lighting_;
+	sf::Shader lighting_shader_;
 #pragma endregion 
 };

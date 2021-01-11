@@ -58,5 +58,8 @@ private:
 	std::vector<Block> blocks_;
 	// Tile-map used for drawing the blocks
 	sf::VertexArray vertices_;
+
+	sf::Uint8* pixels_;
+	sf::Texture lights_;
 #pragma endregion
 };

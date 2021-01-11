@@ -4,6 +4,12 @@ World::World(const WorldSettings gen_settings, const int render_range) :
 render_range_(render_range)
 {
 	gen_settings_ = gen_settings;
+
+	if (!sf::Shader::isAvailable())
+		throw;
+
+	if (!lighting_shader_.loadFromFile("lighting.frag", sf::Shader::Fragment))
+		throw;
 }
 
 World::~World()
@@ -12,8 +18,6 @@ World::~World()
 	{
 		delete chunk;
 	}
-
-	delete[] lighting_pixels_;
 }
 
 void World::ResetChunks()
@@ -52,13 +56,6 @@ void World::Generate()
 
 	min_surface_level_ = gen_settings_.min_surface_level;
 	max_surface_level_ = gen_settings_.max_surface_level;
-
-	// Update lighting texture
-	delete lighting_pixels_;
-	lighting_pixels_ = new sf::Uint8[world_width_ * world_height_ * 4];
-	lighting_tex_.create(world_width_, world_height_);
-	lighting_.setTexture(lighting_tex_);
-	lighting_.setScale(gen_settings_.block_size, gen_settings_.block_size);
 
 	ResetChunks();
 	
@@ -156,62 +153,13 @@ void World::SetBlocks(std::vector<Block> blocks)
 	}
 }
 
-void World::UpdateLighting(const sf::View& view)
+sf::Shader& World::GetShader()
 {
-	for (int px = 0; px < world_width_; px++)
-	{
-		for (int py = world_height_; py >= 0; py--)
-		{
-			Block block = GetBlock(px, py);
-			
-			const int base_pixel = (px + (world_height_ - py - 1) * world_width_) * 4;
-			if (base_pixel < 0 || base_pixel >= world_width_ * world_height_ * 4)
-				continue;
-
-			int distance_to_air = -1;
-			
-			if (block != blocks::air && GetBlock(px, py + 1) == blocks::air)
-				distance_to_air = 1;
-			else if (block != blocks::air && GetBlock(px, py + 2) == blocks::air)
-				distance_to_air = 2;
-			else if (block != blocks::air && GetBlock(px, py + 3) == blocks::air)
-				distance_to_air = 3;
-			else if(block != blocks::air && GetBlock(px, py + 4) == blocks::air)
-				distance_to_air = 4;
-			else if (block != blocks::air && GetBlock(px, py + 5) == blocks::air)
-				distance_to_air = 5;
-			else if (block != blocks::air && GetBlock(px, py + 6) == blocks::air)
-				distance_to_air = 6;
-			else if (block != blocks::air && GetBlock(px, py + 7) == blocks::air)
-				distance_to_air = 7;
-			else if (block != blocks::air && GetBlock(px, py + 8) == blocks::air)
-				distance_to_air = 8;
-			else if (block != blocks::air && GetBlock(px, py + 9) == blocks::air)
-				distance_to_air = 9;
-			else if (block != blocks::air && GetBlock(px, py + 10) == blocks::air)
-				distance_to_air = 10;
-			
-			const int light_value = distance_to_air > -1 ? maths::Remap(
-				distance_to_air,
-				0, 10,
-				0, 255
-			) : 255;
-			
-			lighting_pixels_[base_pixel] = 0;
-			lighting_pixels_[base_pixel + 1] = 0;
-			lighting_pixels_[base_pixel + 2] = 0;
-			lighting_pixels_[base_pixel + 3] = block == blocks::air ? 0 :
-			light_value;
-		}
-	}
-
-	lighting_tex_.update(lighting_pixels_);
+	return lighting_shader_;
 }
 
 void World::Draw(sf::RenderWindow& window)
 {
-	UpdateLighting(window.getView());
-	
 	// Calculate the center chunk
 	const sf::Vector2f view_center = window.getView().getCenter();
 	const int center_chunk_x = view_center.x / settings_.chunk_width / 2;
@@ -230,6 +178,4 @@ void World::Draw(sf::RenderWindow& window)
 			window.draw(*chunks_[x + y * settings_.num_chunks_x]);
 		}
 	}
-
-	window.draw(lighting_);
 }

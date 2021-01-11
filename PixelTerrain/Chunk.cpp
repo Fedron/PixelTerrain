@@ -9,6 +9,22 @@ world_x_(world_x), world_y_(world_y),
 blocks_(world.gen_settings_.chunk_width* world.gen_settings_.chunk_height, blocks::air),
 vertices_(sf::Quads, world.gen_settings_.chunk_width* world.gen_settings_.chunk_height * 4)
 {
+	pixels_ = new sf::Uint8[world.gen_settings_.chunk_width * world.gen_settings_.chunk_height * 4];
+	lights_.create(world.gen_settings_.chunk_width, world.gen_settings_.chunk_height);
+
+	for (int x = 0; x < world.gen_settings_.chunk_width; x++)
+	{
+		for (int y = 0; y < world.gen_settings_.chunk_height; y++)
+		{
+			const int base = (x + y * world.gen_settings_.chunk_width) * 4;
+			pixels_[base] = 100;
+			pixels_[base + 1] = 100;
+			pixels_[base + 2] = 100;
+			pixels_[base + 3] = 255;
+		}
+	}
+	
+	lights_.update(pixels_);
 }
 
 Block Chunk::GetBlock(const int x, const int y) const
@@ -46,25 +62,32 @@ void Chunk::SetBlock(const int x, const int y, const Block block)
 		world_offset_x + (x * world_.gen_settings_.block_size),
 		world_offset_y + (vertex_correct_y * world_.gen_settings_.block_size));
 	quad[0].color = block.color;
+	quad[0].texCoords = sf::Vector2f(0, 0);
 
 	quad[1].position = sf::Vector2f(
 		world_offset_x + ((x + 1) * world_.gen_settings_.block_size),
 		world_offset_y + (vertex_correct_y * world_.gen_settings_.block_size));
 	quad[1].color = block.color;
+	quad[1].texCoords = sf::Vector2f(0, 0);
 
 	quad[2].position = sf::Vector2f(
 		world_offset_x + ((x + 1) * world_.gen_settings_.block_size),
 		world_offset_y + ((vertex_correct_y + 1) * world_.gen_settings_.block_size));
 	quad[2].color = block.color;
+	quad[2].texCoords = sf::Vector2f(0, 0);
 
 	quad[3].position = sf::Vector2f(
 		world_offset_x + (x * world_.gen_settings_.block_size),
 		world_offset_y + ((vertex_correct_y + 1) * world_.gen_settings_.block_size));
 	quad[3].color = block.color;
+	quad[3].texCoords = sf::Vector2f(0, 0);
 }
 
-void Chunk::draw(sf::RenderTarget& target, const sf::RenderStates states) const
+void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	world_.GetShader().setUniform("lightness", lights_);
+	states.shader = &world_.GetShader();
+	
 	// Draw the VertexArray to the window
 	target.draw(vertices_, states);
 }
