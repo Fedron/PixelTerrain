@@ -1,12 +1,9 @@
 #include "World.h"
 
-World::World(const WorldSettings settings, const int render_range) :
+World::World(const WorldSettings gen_settings, const int render_range) :
 render_range_(render_range)
 {
-	gen_settings_ = settings;
-
-	// Load font
-	font_.loadFromFile("font.ttf");
+	gen_settings_ = gen_settings;
 }
 
 World::~World()
@@ -148,11 +145,6 @@ void World::SetBlocks(std::vector<Block> blocks)
 			SetBlock(x, y, blocks[x + y * world_width_]);
 		}
 	}
-}
-
-sf::Font& World::GetFont()
-{
-	return font_;
 }
 
 void World::Draw(sf::RenderWindow& window)

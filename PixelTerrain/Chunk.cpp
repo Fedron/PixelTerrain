@@ -9,28 +9,6 @@ world_x_(world_x), world_y_(world_y),
 blocks_(world.gen_settings_.chunk_width* world.gen_settings_.chunk_height, blocks::air),
 vertices_(sf::Quads, world.gen_settings_.chunk_width* world.gen_settings_.chunk_height * 4)
 {
-	// Setups the coord text
-	coords_text_.setFont(world_.GetFont());
-	coords_text_.setString(std::to_string(world_x_) + ", " + std::to_string(world_y_));
-	coords_text_.setCharacterSize(12);
-	coords_text_.setFillColor(sf::Color::White);
-
-	// Sets the position of the coord text to the top-left of the chunk
-	coords_text_.setPosition(
-		(world_x_ * world_.gen_settings_.chunk_width * world_.gen_settings_.block_size) + 2,
-		(((world_.gen_settings_.num_chunks_y - 1) * world_.gen_settings_.chunk_width * world_.gen_settings_.block_size) - world_y_ * world_.gen_settings_.chunk_height * world_.gen_settings_.block_size) + 2
-	);
-
-	// Setups the update text
-	update_text_.setFont(world_.GetFont());
-	update_text_.setCharacterSize(10);
-	UpdateUpdateText();
-
-	// Sets the position of the update text to the top-right
-	update_text_.setPosition(
-		(world_x_ * world_.gen_settings_.chunk_width * world_.gen_settings_.block_size) + world_.gen_settings_.chunk_width - 2,
-		(((world_.gen_settings_.num_chunks_y - 1) * world_.gen_settings_.chunk_width * world_.gen_settings_.block_size) - world_y_ * world_.gen_settings_.chunk_height * world_.gen_settings_.block_size) + 2
-	);
 }
 
 Block Chunk::GetBlock(const int x, const int y) const
@@ -48,7 +26,7 @@ void Chunk::SetBlock(const int x, const int y, const Block block)
 	// Don't try setting a block if out of bounds
 	if (x < 0 || x >= world_.gen_settings_.chunk_width || y < 0 || y >= world_.gen_settings_.chunk_height)
 		return;
-
+	
 	// Set the block
 	blocks_[x + y * world_.gen_settings_.chunk_width] = block;
 
@@ -85,28 +63,8 @@ void Chunk::SetBlock(const int x, const int y, const Block block)
 	quad[3].color = block.color;
 }
 
-void Chunk::UpdateUpdateText()
-{
-	if (updating_)
-	{
-		update_text_.setString("U");
-		update_text_.setFillColor(sf::Color::Green);
-	} else
-	{
-		update_text_.setString("S");
-		update_text_.setFillColor(sf::Color::Red);
-	}
-}
-
-void Chunk::draw(sf::RenderTarget& target, const sf::RenderStates states) const
+void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	// Draw the VertexArray to the window
 	target.draw(vertices_, states);
-
-	// Draw the chunk coordinates
-	if (world_.debug_mode_)
-	{
-		target.draw(coords_text_);
-		target.draw(update_text_);
-	}
 }
