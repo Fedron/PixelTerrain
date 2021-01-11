@@ -168,11 +168,34 @@ void World::UpdateLighting(const sf::View& view)
 			if (base_pixel < 0 || base_pixel >= world_width_ * world_height_ * 4)
 				continue;
 
-			int light_value = maths::Remap(
-				py,
-				0, world_height_,
-				255, 150
-			);
+			int distance_to_air = -1;
+			
+			if (block != blocks::air && GetBlock(px, py + 1) == blocks::air)
+				distance_to_air = 1;
+			else if (block != blocks::air && GetBlock(px, py + 2) == blocks::air)
+				distance_to_air = 2;
+			else if (block != blocks::air && GetBlock(px, py + 3) == blocks::air)
+				distance_to_air = 3;
+			else if(block != blocks::air && GetBlock(px, py + 4) == blocks::air)
+				distance_to_air = 4;
+			else if (block != blocks::air && GetBlock(px, py + 5) == blocks::air)
+				distance_to_air = 5;
+			else if (block != blocks::air && GetBlock(px, py + 6) == blocks::air)
+				distance_to_air = 6;
+			else if (block != blocks::air && GetBlock(px, py + 7) == blocks::air)
+				distance_to_air = 7;
+			else if (block != blocks::air && GetBlock(px, py + 8) == blocks::air)
+				distance_to_air = 8;
+			else if (block != blocks::air && GetBlock(px, py + 9) == blocks::air)
+				distance_to_air = 9;
+			else if (block != blocks::air && GetBlock(px, py + 10) == blocks::air)
+				distance_to_air = 10;
+			
+			const int light_value = distance_to_air > -1 ? maths::Remap(
+				distance_to_air,
+				0, 10,
+				0, 255
+			) : 255;
 			
 			lighting_pixels_[base_pixel] = 0;
 			lighting_pixels_[base_pixel + 1] = 0;
