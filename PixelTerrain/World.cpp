@@ -4,12 +4,6 @@ World::World(const WorldSettings gen_settings, const int render_range) :
 render_range_(render_range)
 {
 	gen_settings_ = gen_settings;
-
-	if (!sf::Shader::isAvailable())
-		throw;
-
-	if (!lighting_shader_.loadFromFile("lighting.frag", sf::Shader::Fragment))
-		throw;
 }
 
 World::~World()
@@ -151,11 +145,6 @@ void World::SetBlocks(std::vector<Block> blocks)
 			SetBlock(x, y, blocks[x + y * world_width_]);
 		}
 	}
-}
-
-sf::Shader& World::GetShader()
-{
-	return lighting_shader_;
 }
 
 void World::Draw(sf::RenderWindow& window)

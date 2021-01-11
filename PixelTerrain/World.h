@@ -109,8 +109,6 @@ public:
 	 * @param blocks A list of all the blocks (row-major)
 	 */
 	void SetBlocks(std::vector<Block> blocks);
-
-	sf::Shader& GetShader();
 	
 	/**
 	 * Draws all the chunks to the window
@@ -161,7 +159,5 @@ private:
 	std::vector<void (*)(World& world)> generation_tasks_;
 	// A list of all the instantiated chunks (row-major)
 	std::vector<Chunk*> chunks_;
-
-	sf::Shader lighting_shader_;
 #pragma endregion 
 };

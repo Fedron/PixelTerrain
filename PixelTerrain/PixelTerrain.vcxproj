@@ -177,9 +177,6 @@
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="lighting.frag" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
