@@ -5,7 +5,7 @@
 
 namespace gui
 {
-	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block& active_block)
+	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block** active_block)
 	{
 		const ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
@@ -41,15 +41,15 @@ namespace gui
 		// Set active_block depending on selected_block
 		// TODO: Improve this, could be done in a neater way
 		if (selected_block == 0)
-			active_block = blocks::dirt;
+			*active_block = blocks::dirt;
 		else if (selected_block == 1)
-			active_block = blocks::grass;
+			*active_block = blocks::grass;
 		else if (selected_block == 2)
-			active_block = blocks::stone;
+			*active_block = blocks::stone;
 		else if (selected_block == 3)
-			active_block = blocks::sand;
+			*active_block = blocks::sand;
 		else if (selected_block == 4)
-			active_block = blocks::water;
+			*active_block = blocks::water;
 		
 		ImGui::End();
 	}

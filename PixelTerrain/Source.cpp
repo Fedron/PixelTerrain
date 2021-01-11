@@ -44,7 +44,7 @@ int main()
 
     float view_move_speed = 300;
 
-    Block active_block = blocks::dirt;
+    Block* active_block = blocks::dirt;
     int brush_size = 4;
 
     sf::Vector2i mouse_pos;
@@ -183,11 +183,12 @@ int main()
                 }
             }
         }
-    	
+
+        world->Update(window);
         ImGui::SFML::Update(window, delta_clock.restart());
 
     	// GUI
-        gui::ShowBrushSettings(window_size, brush_size, active_block);
+        gui::ShowBrushSettings(window_size, brush_size, &active_block);
         gui::ShowViewSettings(view_move_speed, main_view.getCenter());
     	
     	if (show_settings)

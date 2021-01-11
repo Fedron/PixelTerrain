@@ -27,7 +27,7 @@ public:
 	 *
 	 * @returns The block at the coordinates
 	 */
-	Block GetBlock(int x, int y) const;
+	Block* GetBlock(int x, int y) const;
 
 	/**
 	 * Sets the block at the given coordinates
@@ -36,7 +36,12 @@ public:
 	 * @param y The y coordinate, within the chunk, of the block
 	 * @param block The block to set to
 	 */
-    void SetBlock(int x, int y, Block block);
+    void SetBlock(int x, int y, Block* block);
+
+	/** 
+	 * Updates all the blocks within the chunk
+	 */
+	void Update();
 
 private:	
 	/**
@@ -55,7 +60,7 @@ private:
 	const int world_y_;
 
 	// A list of all the blocks in the chunk (row-major)
-	std::vector<Block> blocks_;
+	std::vector<Block*> blocks_;
 	// Tile-map used for drawing the blocks
 	sf::VertexArray vertices_;
 #pragma endregion

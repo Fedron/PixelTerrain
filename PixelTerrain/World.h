@@ -84,7 +84,7 @@ public:
 	 *
 	 * @returns The block at the coordinates
 	 */
-	Block GetBlock(int x, int y) const;
+	Block* GetBlock(int x, int y) const;
 
 	/**
 	 * Sets the block at the given coordinates
@@ -93,7 +93,7 @@ public:
 	 * @param y The global y coordinate of the block
 	 * @param block The block to set the coordinates to
 	 */
-	void SetBlock(int x, int y, Block block);
+	void SetBlock(int x, int y, Block* block);
 
 	// TODO: Make it return blocks in a given rect
 	/**
@@ -101,14 +101,21 @@ public:
 	 *
 	 * @returns A vector containing all the block (row-major)
 	 */
-	std::vector<Block> GetBlocks() const;
+	std::vector<Block*> GetBlocks() const;
 
 	/**
 	 * Sets all the blocks in the world
 	 *
 	 * @param blocks A list of all the blocks (row-major)
 	 */
-	void SetBlocks(std::vector<Block> blocks);
+	void SetBlocks(std::vector<Block*> blocks);
+
+	/**
+	 * Updates all the chunks in the view
+	 *
+	 * @param window The window to draw to
+	 */
+	void Update(sf::RenderWindow& window);
 	
 	/**
 	 * Draws all the chunks to the window

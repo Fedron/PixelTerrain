@@ -4,7 +4,7 @@
 #include "imgui.h"
 
 class World;
-struct Block;
+class Block;
 struct WorldSettings;
 
 namespace gui
@@ -16,7 +16,7 @@ namespace gui
 	 * @param brush_size Reference to the brush size
 	 * @param active_block Reference to the active block
 	 */
-	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block& active_block);
+	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block** active_block);
 
 	/**
 	 * Shows settings for moving the view

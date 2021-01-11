@@ -51,6 +51,8 @@ void World::Generate()
 	min_surface_level_ = gen_settings_.min_surface_level;
 	max_surface_level_ = gen_settings_.max_surface_level;
 
+	settings_ = gen_settings_;
+
 	ResetChunks();
 	
 	// Get current time
@@ -74,8 +76,6 @@ void World::Generate()
 	const auto end_time = std::chrono::high_resolution_clock::now();
 	const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 	generation_time_ = duration.count();
-
-	settings_ = gen_settings_;
 }
 
 double World::GetNoise(const int x, const int y) const
@@ -84,23 +84,23 @@ double World::GetNoise(const int x, const int y) const
 	return perlin_noise_.GetValue(x * 0.001, y * 0.001, 0);
 }
 
-Block World::GetBlock(const int x, const int y) const
+Block* World::GetBlock(const int x, const int y) const
 {
 	// Return null block if out of bounds
 	if (x < 0 || x >= world_width_ || y < 0 || y >= world_height_)
 		return blocks::null;
 
 	// Calculate the chunk in which block is located
-	const int chunk_x = x / gen_settings_.chunk_width;
-	const int chunk_y = y / gen_settings_.chunk_height;
+	const int chunk_x = x / settings_.chunk_width;
+	const int chunk_y = y / settings_.chunk_height;
 
 	// Get the chunk
-	const Chunk* chunk = chunks_[chunk_x + chunk_y * gen_settings_.num_chunks_x];
+	const Chunk* chunk = chunks_[chunk_x + chunk_y * settings_.num_chunks_x];
 	// Convert global coordinates to local chunk coordinates and get the block
-	return chunk->GetBlock(x - (chunk_x * gen_settings_.chunk_width), y - (chunk_y * gen_settings_.chunk_height));
+	return chunk->GetBlock(x - (chunk_x * settings_.chunk_width), y - (chunk_y * gen_settings_.chunk_height));
 }
 
-void World::SetBlock(const int x, const int y, const Block block)
+void World::SetBlock(const int x, const int y, Block* block)
 {
 	// Don't attempt to set a block if coordinates out of bounds
 	if (x < 0 || x >= world_width_ || y < 0 || y >= world_height_)
@@ -116,10 +116,10 @@ void World::SetBlock(const int x, const int y, const Block block)
 	chunk->SetBlock(x - (chunk_x * gen_settings_.chunk_width), y - (chunk_y * gen_settings_.chunk_height), block);
 }
 
-std::vector<Block> World::GetBlocks() const
+std::vector<Block*> World::GetBlocks() const
 {
 	// Create a new vector to return filled with null blocks
-	std::vector<Block> blocks(world_width_ * world_height_, blocks::null);
+	std::vector<Block*> blocks(world_width_ * world_height_, blocks::null);
 
 	for (int x = 0; x < world_width_; x++)
 	{
@@ -134,7 +134,7 @@ std::vector<Block> World::GetBlocks() const
 	return blocks;
 }
 
-void World::SetBlocks(std::vector<Block> blocks)
+void World::SetBlocks(std::vector<Block*> blocks)
 {
 	// Iterate through all (x, y) coordinates
 	for (int x = 0; x < world_width_; x++)
@@ -143,6 +143,28 @@ void World::SetBlocks(std::vector<Block> blocks)
 		{
 			// Set the block in the world at (x, y) to the block in the new vector
 			SetBlock(x, y, blocks[x + y * world_width_]);
+		}
+	}
+}
+
+void World::Update(sf::RenderWindow& window)
+{
+	// Calculate the center chunk
+	const sf::Vector2f view_center = window.getView().getCenter();
+	const int center_chunk_x = view_center.x / settings_.chunk_width / 2;
+	const int center_chunk_y = settings_.num_chunks_y - (view_center.y / settings_.chunk_height / 2);
+
+	// Render chunks around the center, in a given square range
+	// TODO: Use separate render ranges for x and y due to 16:9 ratio
+	for (int x = center_chunk_x - render_range_; x <= center_chunk_x + render_range_; x++)
+	{
+		for (int y = center_chunk_y - render_range_; y <= center_chunk_y + render_range_; y++)
+		{
+			if (x < 0 || x >= settings_.num_chunks_x ||
+				y < 0 || y >= settings_.num_chunks_y)
+				continue;
+
+			chunks_[x + y * settings_.num_chunks_x]->Update();
 		}
 	}
 }

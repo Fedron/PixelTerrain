@@ -86,7 +86,7 @@ namespace generation_tasks
         {
             for (int y = world.min_surface_level_; y < world.world_height_; y++)
             {
-                Block block = world.GetBlock(x, y);
+                Block* block = world.GetBlock(x, y);
                 if (block != blocks::grass) continue;
 
                 int num_air = 0;
@@ -117,11 +117,11 @@ namespace generation_tasks
         world.perlin_noise_.SetFrequency(world.gen_settings_.overhang_roughness);
 
 		// Copy of the terrain to adjust
-        std::vector<Block> overhang_terrain = world.GetBlocks();
+        std::vector<Block*> overhang_terrain = world.GetBlocks();
 
         for (int x = 0; x < world.world_width_; x++) {
             for (int y = world.min_surface_level_; y < world.world_height_; y++) {
-                Block block = world.GetBlock(x, y);
+                Block* block = world.GetBlock(x, y);
 
                 // Checks if the current block is on the surface
                 if (block == blocks::air || block == blocks::null) continue;
@@ -141,7 +141,7 @@ namespace generation_tasks
                     );
 
                 	// Determines whether to extend by the block or remove using air
-                    const Block new_block =
+                    Block* new_block =
                         world.GetBlock(x + maths::Sign(move_amount), y) != blocks::air ?
                         blocks::air : block;
                 	
@@ -206,7 +206,7 @@ namespace generation_tasks
         {
             bool water_in_col = false;
             for (int y = world.min_surface_level_ - water_range; y < world.sea_level_ + water_range; y++) {
-                Block block = world.GetBlock(x, y);
+                Block* block = world.GetBlock(x, y);
                 if (block == blocks::air) break;
                 if (block == blocks::grass || block == blocks::dirt)
                 {
