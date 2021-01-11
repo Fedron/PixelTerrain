@@ -1,12 +1,9 @@
 #include "World.h"
 
-World::World(const WorldSettings settings, const int render_range) :
+World::World(const WorldSettings gen_settings, const int render_range) :
 render_range_(render_range)
 {
-	gen_settings_ = settings;
-
-	// Load font
-	font_.loadFromFile("font.ttf");
+	gen_settings_ = gen_settings;
 }
 
 World::~World()
@@ -15,6 +12,8 @@ World::~World()
 	{
 		delete chunk;
 	}
+
+	delete[] lighting_pixels_;
 }
 
 void World::ResetChunks()
@@ -53,6 +52,13 @@ void World::Generate()
 
 	min_surface_level_ = gen_settings_.min_surface_level;
 	max_surface_level_ = gen_settings_.max_surface_level;
+
+	// Update lighting texture
+	delete lighting_pixels_;
+	lighting_pixels_ = new sf::Uint8[world_width_ * world_height_ * 4];
+	lighting_tex_.create(world_width_, world_height_);
+	lighting_.setTexture(lighting_tex_);
+	lighting_.setScale(gen_settings_.block_size, gen_settings_.block_size);
 
 	ResetChunks();
 	
@@ -150,13 +156,39 @@ void World::SetBlocks(std::vector<Block> blocks)
 	}
 }
 
-sf::Font& World::GetFont()
+void World::UpdateLighting(const sf::View& view)
 {
-	return font_;
+	for (int px = 0; px < world_width_; px++)
+	{
+		for (int py = world_height_; py >= 0; py--)
+		{
+			Block block = GetBlock(px, py);
+			
+			const int base_pixel = (px + (world_height_ - py - 1) * world_width_) * 4;
+			if (base_pixel < 0 || base_pixel >= world_width_ * world_height_ * 4)
+				continue;
+
+			int light_value = maths::Remap(
+				py,
+				0, world_height_,
+				255, 150
+			);
+			
+			lighting_pixels_[base_pixel] = 0;
+			lighting_pixels_[base_pixel + 1] = 0;
+			lighting_pixels_[base_pixel + 2] = 0;
+			lighting_pixels_[base_pixel + 3] = block == blocks::air ? 0 :
+			light_value;
+		}
+	}
+
+	lighting_tex_.update(lighting_pixels_);
 }
 
 void World::Draw(sf::RenderWindow& window)
 {
+	UpdateLighting(window.getView());
+	
 	// Calculate the center chunk
 	const sf::Vector2f view_center = window.getView().getCenter();
 	const int center_chunk_x = view_center.x / settings_.chunk_width / 2;
@@ -175,4 +207,6 @@ void World::Draw(sf::RenderWindow& window)
 			window.draw(*chunks_[x + y * settings_.num_chunks_x]);
 		}
 	}
+
+	window.draw(lighting_);
 }

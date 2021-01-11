@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "Block.h"
+#include "MathHelpers.h"
 
 class World;
 
@@ -37,17 +38,11 @@ public:
 	 */
     void SetBlock(int x, int y, Block block);
 
-private:
-	/**
-	 * Updates the update text to show the correct information
-	 * depending on the state of the chunk
-	 */
-	void UpdateUpdateText();
-	
+private:	
 	/**
 	 * SFML draw function, draws to the window
 	 */
-    void draw(sf::RenderTarget& target, const sf::RenderStates states) const override;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 #pragma endregion 
 
 #pragma region Variables
@@ -59,17 +54,9 @@ private:
 	// Y coordinate of the chunk in the world
 	const int world_y_;
 
-	// State determining if the chunk is being updated
-	bool updating_ = false;
-
 	// A list of all the blocks in the chunk (row-major)
 	std::vector<Block> blocks_;
 	// Tile-map used for drawing the blocks
 	sf::VertexArray vertices_;
-
-	// Text used to display chunk's coordinates
-	sf::Text coords_text_;
-	// Text used to display if the chunk is being updated
-	sf::Text update_text_;
 #pragma endregion
 };

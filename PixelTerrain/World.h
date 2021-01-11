@@ -40,10 +40,11 @@ class World
 #pragma region Methods
 public:
 	/**
-	 * @param settings A WorldSettings struct containing all the
+	 * @param gen_settings A WorldSettings struct containing all the
 	 *     the parameters for generation
+	 * @param render_range Default render range to use
 	 */
-	explicit World(WorldSettings settings, int render_range);
+	explicit World(WorldSettings gen_settings, int render_range);
 	/**
 	 * Destructs the world and all the chunks
 	 */
@@ -110,11 +111,11 @@ public:
 	void SetBlocks(std::vector<Block> blocks);
 
 	/**
-	 * Gets the font loaded by the world
+	 * Updates the world lighting within the view
 	 *
-	 * @returns A reference to the loaded font
+	 * @param view View within which to calculate lighting
 	 */
-	sf::Font& GetFont();
+	void UpdateLighting(const sf::View& view);
 	
 	/**
 	 * Draws all the chunks to the window
@@ -160,16 +161,14 @@ public:
 	// libnoise Perlin noise module
 	noise::module::Perlin perlin_noise_;
 
-	// Controls the drawing of debug utils
-	bool debug_mode_ = false;
-
 private:
 	// A list of all the generation tasks
 	std::vector<void (*)(World& world)> generation_tasks_;
 	// A list of all the instantiated chunks (row-major)
 	std::vector<Chunk*> chunks_;
 
-	// Default font for debugging
-	sf::Font font_;
+	sf::Uint8* lighting_pixels_;
+	sf::Texture lighting_tex_;
+	sf::Sprite lighting_;
 #pragma endregion 
 };
