@@ -39,7 +39,6 @@ namespace gui
 		ImGui::Combo(" ", &selected_block, blocks, IM_ARRAYSIZE(blocks));
 
 		// Set active_block depending on selected_block
-		// TODO: Improve this, could be done in a neater way
 		if (selected_block == 0)
 			*active_block = blocks::dirt;
 		else if (selected_block == 1)

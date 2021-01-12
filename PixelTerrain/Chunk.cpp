@@ -6,7 +6,8 @@
 Chunk::Chunk(World& world, const int world_x, const int world_y) :
 world_(world),
 world_x_(world_x), world_y_(world_y),
-blocks_(world.settings_.chunk_width* world.settings_.chunk_height, blocks::air),
+current_blocks_(world.settings_.chunk_width* world.settings_.chunk_height, blocks::air),
+next_blocks_(world.settings_.chunk_width* world.settings_.chunk_height, blocks::air),
 vertices_(sf::Quads, world.settings_.chunk_width* world.settings_.chunk_height * 4)
 {
 }
@@ -23,7 +24,7 @@ Block* Chunk::GetBlock(const int x, const int y) const
 	}
 
 	// Return block
-	return blocks_[x + y * world_.settings_.chunk_width];
+	return current_blocks_[x + y * world_.settings_.chunk_width];
 }
 
 void Chunk::SetBlock(const int x, const int y, Block* block)
@@ -39,7 +40,7 @@ void Chunk::SetBlock(const int x, const int y, Block* block)
 	}
 	
 	// Set the block
-	blocks_[x + y * world_.settings_.chunk_width] = block;
+	next_blocks_[x + y * world_.settings_.chunk_width] = block;
 
 	// Update vertices
 	// Inverted-y to account for top-left being (0, 0) when drawing
@@ -76,16 +77,24 @@ void Chunk::SetBlock(const int x, const int y, Block* block)
 
 void Chunk::Update()
 {
-	for (int x = 0; x < world_.settings_.chunk_width; x++)
+	// Run each block's update
+	for (int y = 0; y < world_.settings_.chunk_height; y++)
 	{
-		for (int y = 0; y < world_.settings_.chunk_height; y++)
+		for (int x = 0; x < world_.settings_.chunk_width; x++)
 		{
-			blocks_[x + y * world_.settings_.chunk_width]->Update(
+			current_blocks_[x + y * world_.settings_.chunk_width]->Update(
 				*this,
 				x, y
 			);
 		}
 	}
+	
+	UpdateBlocks();
+}
+
+void Chunk::UpdateBlocks()
+{
+	current_blocks_ = next_blocks_;
 }
 
 void Chunk::draw(sf::RenderTarget& target, const sf::RenderStates states) const

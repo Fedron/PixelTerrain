@@ -37,6 +37,7 @@ void Block::Update(Chunk& chunk, int x, int y)
 
 void SandBlock::Update(Chunk& chunk, const int x, const int y)
 {
+	// Handle falling through air
 	if (*chunk.GetBlock(x, y - 1) == *blocks::air)
 	{
 		chunk.SetBlock(x, y, blocks::air);
@@ -57,8 +58,31 @@ void SandBlock::Update(Chunk& chunk, const int x, const int y)
 		chunk.SetBlock(x + 1, y - 1, this);
 		return;
 	}
+
+	// Handle falling through water
+	if (*chunk.GetBlock(x, y - 1) == *blocks::water)
+	{
+		chunk.SetBlock(x, y, blocks::water);
+		chunk.SetBlock(x, y - 1, this);
+		return;
+	}
+
+	if (*chunk.GetBlock(x - 1, y - 1) == *blocks::water)
+	{
+		chunk.SetBlock(x, y, blocks::water);
+		chunk.SetBlock(x - 1, y - 1, this);
+		return;
+	}
+
+	if (*chunk.GetBlock(x + 1, y - 1) == *blocks::water)
+	{
+		chunk.SetBlock(x, y, blocks::water);
+		chunk.SetBlock(x + 1, y - 1, this);
+		return;
+	}
 }
 
 void FluidBlock::Update(Chunk& chunk, const int x, const int y)
 {
+	// TODO: Implement
 }

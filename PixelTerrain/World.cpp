@@ -70,6 +70,11 @@ void World::Generate()
 	for (auto& generation_task : generation_tasks_)
 	{
 		(*generation_task)(*this);
+
+		for (Chunk* chunk : chunks_)
+		{
+			chunk->UpdateBlocks();
+		}
 	}
 
 	// Calculate how long generation took
@@ -114,37 +119,6 @@ void World::SetBlock(const int x, const int y, Block* block)
 	Chunk* chunk = chunks_[chunk_x + chunk_y * gen_settings_.num_chunks_x];
 	// Convert global coordinates to local chunk coordinates and set the block
 	chunk->SetBlock(x - (chunk_x * gen_settings_.chunk_width), y - (chunk_y * gen_settings_.chunk_height), block);
-}
-
-std::vector<Block*> World::GetBlocks() const
-{
-	// Create a new vector to return filled with null blocks
-	std::vector<Block*> blocks(world_width_ * world_height_, blocks::null);
-
-	for (int x = 0; x < world_width_; x++)
-	{
-		for (int y = 0; y < world_height_; y++)
-		{
-			// Set the block at (x, y) to the block at (x, y)
-			blocks[x + y * world_width_] = GetBlock(x, y);
-		}
-	}
-
-	// Return the new vector
-	return blocks;
-}
-
-void World::SetBlocks(std::vector<Block*> blocks)
-{
-	// Iterate through all (x, y) coordinates
-	for (int x = 0; x < world_width_; x++)
-	{
-		for (int y = 0; y < world_height_; y++)
-		{
-			// Set the block in the world at (x, y) to the block in the new vector
-			SetBlock(x, y, blocks[x + y * world_width_]);
-		}
-	}
 }
 
 void World::Update(sf::RenderWindow& window)

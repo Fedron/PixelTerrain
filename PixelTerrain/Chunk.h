@@ -43,6 +43,11 @@ public:
 	 */
 	void Update();
 
+	/**
+	 * Updates the list of current blocks to be the next blocks
+	 */
+	void UpdateBlocks();
+
 private:	
 	/**
 	 * SFML draw function, draws to the window
@@ -59,8 +64,18 @@ private:
 	// Y coordinate of the chunk in the world
 	const int world_y_;
 
-	// A list of all the blocks in the chunk (row-major)
-	std::vector<Block*> blocks_;
+	/*
+	 * A list of all the blocks in the chunk (row-major)
+	 * From the previous frame
+	 */
+	std::vector<Block*> current_blocks_;
+	
+	/*
+	 * A list of all the blocks in the chunk (row-major)
+	 * These will be rendered at the end of the current frame
+	 */
+	std::vector<Block*> next_blocks_;
+	
 	// Tile-map used for drawing the blocks
 	sf::VertexArray vertices_;
 #pragma endregion

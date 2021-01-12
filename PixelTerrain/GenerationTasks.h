@@ -116,9 +116,6 @@ namespace generation_tasks
     {
         world.perlin_noise_.SetFrequency(world.gen_settings_.overhang_roughness);
 
-		// Copy of the terrain to adjust
-        std::vector<Block*> overhang_terrain = world.GetBlocks();
-
         for (int x = 0; x < world.world_width_; x++) {
             for (int y = world.min_surface_level_; y < world.world_height_; y++) {
                 Block* block = world.GetBlock(x, y);
@@ -154,7 +151,7 @@ namespace generation_tasks
 
                         	// Calculates the position of the block in world-space
                             const int pos = (x + i) + y * world.world_width_;
-                            overhang_terrain[pos] = new_block;
+                            world.SetBlock(x + i, y, new_block);
                         }
                     }
                     else
@@ -166,14 +163,12 @@ namespace generation_tasks
                         	
                             // Calculates the position of the block in world-space
                             const int pos = (x + i) + y * world.world_width_;           
-                            overhang_terrain[pos] = new_block;
+                            world.SetBlock(x + i, y, new_block);
                         }
                     }
                 }
             }
         }
-
-        world.SetBlocks(overhang_terrain);
     }
 	
     /**
@@ -197,56 +192,22 @@ namespace generation_tasks
 
             	// Set the block to water
                 world.SetBlock(x, y, blocks::water);
-            }
-        }
 
-        // Replace grass and dirt near water with sand
-        const int water_range = 30;
-        for (int x = 0; x < world.world_width_; x++)
-        {
-            bool water_in_col = false;
-            for (int y = world.min_surface_level_ - water_range; y < world.sea_level_ + water_range; y++) {
-                Block* block = world.GetBlock(x, y);
-                if (block == blocks::air) break;
-                if (block == blocks::grass || block == blocks::dirt)
+            	// Set neighbouring grass and dirt blocks to sand
+                bool should_break = false;
+                for (int nx = x - world.gen_settings_.sand_range; nx <= x + world.gen_settings_.sand_range; nx++)
                 {
-                    bool within_water_range = false;
-
-                    /*
-                     * Checks all points within a square of half-extends water_range
-                     * to see if the current block is near water
-                     */
-                    for (int nx = x - water_range; nx <= x + water_range; nx++)
+                    for (int ny = y - world.gen_settings_.sand_range; ny <= y + world.gen_settings_.sand_range; ny++)
                     {
-                        for (int ny = y - water_range; ny <= y + water_range; ny++)
+                        Block* block = world.GetBlock(nx, ny);
+                        // Checks if current block is water
+                        if (block == blocks::grass || block == blocks::dirt)
                         {
-							// Checks if current block is water
-                            if (world.GetBlock(nx, ny) == blocks::water)
-                            {
-                                within_water_range = true;
-                                break;
-                            }
+                            world.SetBlock(nx, ny, blocks::sand);
                         }
-
-                        if (within_water_range) break;
-                    }
-
-                	// If water is near the current block set it to sand
-                    if (within_water_range)
-                    {
-                        world.SetBlock(x, y, blocks::sand);
-                        water_in_col = true;
                     }
                 }
             }
-
-        	/*
-        	 * If the column that was just checked didn't have any water
-        	 * in it, move the x by the water range to skip checking
-        	 * unnecessary blocks
-        	 */
-            if (!water_in_col)
-                x += water_range - 1;
         }
     }
 }
