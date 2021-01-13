@@ -35,6 +35,7 @@ int main()
     world->AddGenerationTask(generation_tasks::HeightMap);
     world->AddGenerationTask(generation_tasks::Overhangs);
     world->AddGenerationTask(generation_tasks::Water);
+    world->AddGenerationTask(generation_tasks::Trees);
     world->Generate();
 
     // Game loop variables

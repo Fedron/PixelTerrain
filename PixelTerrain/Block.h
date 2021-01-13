@@ -62,4 +62,6 @@ namespace blocks
 	static Block* stone = new Block(3, sf::Color(124, 132, 133, 255));
 	static SandBlock* sand = new SandBlock(4, sf::Color(229, 217, 194, 255));
 	static FluidBlock* water = new FluidBlock(5, sf::Color(78, 182, 237, 255));
+	static Block* wood = new Block(6, sf::Color(139, 90, 43, 255));
+	static Block* leaf = new Block(7, sf::Color(5, 144, 51, 255));
 }

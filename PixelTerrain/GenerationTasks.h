@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+#include <random>
 #include "MathHelpers.h"
 #include "World.h"
 
@@ -210,4 +212,78 @@ namespace generation_tasks
             }
         }
     }
+
+	/**
+	 * Generates trees across the surface
+	 *
+	 * @param world Reference to the world
+	 */
+	inline void Trees(World& world)
+	{
+		// Gets a random bool
+        auto gen = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
+
+        // Random number generator
+		// TODO: Use PRNG
+        std::random_device device;
+        std::mt19937 generator(device());
+		const std::uniform_int_distribution<int> distribution(10, 25);
+		
+        const int min_tree_spacing = 5;
+        int tree_count = 0;
+		
+		// Iterate over all surface blocks
+		for (int x = 0; x < world.world_width_; x++)
+		{
+            for (int y = world.min_surface_level_; y <= world.max_surface_level_; y++)
+            {
+                Block* block = world.GetBlock(x, y);
+                if (block != blocks::grass)
+                    continue;
+
+                // Checks if the current block is on the surface
+                if (block == blocks::air || block == blocks::null) continue;
+                bool is_surface_block = false;
+                if (world.GetBlock(x + 1, y) == blocks::air)
+                    is_surface_block = true;
+                else if (world.GetBlock(x - 1, y) == blocks::air)
+                    is_surface_block = true;
+
+            	if (is_surface_block)
+            	{
+                    if (!gen()) continue;
+            		
+                    const int trunk_height = distribution(generator);
+                    const int trunk_width = distribution(generator) / 8;
+
+                    tree_count++;
+                    x += min_tree_spacing;
+
+            		// Creates the trunk
+            		for (int tx = 0; tx < trunk_width; tx++)
+            		{
+                        for (int ty = 0; ty < trunk_height; ty++)
+                        {
+                            world.SetBlock(x + tx, y + ty, blocks::wood);
+                        }
+            		}
+
+                    // Creates the leaves
+                    const int leaves_size = distribution(generator) / 4;
+            		for (int lx = x - leaves_size; lx <= x + leaves_size; lx++)
+            		{
+            			for (int ly = y + trunk_height - leaves_size; ly < y + trunk_height + leaves_size; ly++)
+            			{
+                            world.SetBlock(lx, ly, blocks::leaf);
+            			}
+            		}
+            		
+                    break;
+            	}
+            }
+
+            if (tree_count >= 20)
+                break;
+		}
+	}
 }
