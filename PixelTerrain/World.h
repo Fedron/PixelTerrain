@@ -34,6 +34,12 @@ struct WorldSettings
 
 	int tree_spacing;
 	int trees_per_chunk;
+	int min_trunk_width;
+	int max_trunk_width;
+	int min_trunk_height;
+	int max_trunk_height;
+	int min_treetop_size;
+	int max_treetop_size;
 };
 
 /**

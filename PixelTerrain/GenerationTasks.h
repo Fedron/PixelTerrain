@@ -247,10 +247,18 @@ namespace generation_tasks
                     tree_count++;
 
             		// Determine the characteristics of the tree
-                    const int trunk_height = world.GetRandomNumber(10, 20);
-                    const int trunk_width = world.GetRandomNumber(1, 2);         		
-                    const int leaves_size =
-                        world.GetRandomNumber(trunk_width + 3, trunk_width + 8);
+                    const int trunk_width = world.GetRandomNumber(
+						world.gen_settings_.min_trunk_width,
+                        world.gen_settings_.max_trunk_width
+                    );
+                    const int trunk_height = world.GetRandomNumber(
+                        world.gen_settings_.min_trunk_height,
+                        world.gen_settings_.max_trunk_height
+                    );      		
+                    const int treetop_size = world.GetRandomNumber(
+                        trunk_width + world.gen_settings_.min_treetop_size,
+                        trunk_width + world.gen_settings_.max_treetop_size
+                    );
 
             		// TODO: Support creating several branches
                     // TODO: Generate roots
@@ -282,9 +290,9 @@ namespace generation_tasks
             		}
 
                     // Generate the leaves
-            		for (int lx = -leaves_size; lx <= leaves_size; lx++)
+            		for (int lx = -treetop_size; lx <= treetop_size; lx++)
             		{
-                        for (int ly = -leaves_size; ly <= leaves_size; ly++)
+                        for (int ly = -treetop_size; ly <= treetop_size; ly++)
                         {
                             world.SetBlock(x + lx, y + trunk_height + ly, blocks::leaf);
                         }

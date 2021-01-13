@@ -56,6 +56,13 @@ namespace gui
 	void ShowWaterSettings(WorldSettings& world);
 
 	/**
+	 * Renders the tree settings section
+	 *
+	 * @param world World settings for the world which to display settings for
+	 */
+	void ShowTreeSettings(WorldSettings& world);
+
+	/**
 	 * Displays a help icon in-line with a tooltip
 	 *
 	 * @param desc The tooltip to display on hover

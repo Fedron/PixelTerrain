@@ -126,6 +126,7 @@ namespace gui
 		ShowGeneralSettings(world.gen_settings_);
 		ShowSurfaceSettings(world.gen_settings_);
 		ShowWaterSettings(world.gen_settings_);
+		ShowTreeSettings(world.gen_settings_);
 
 		ImGui::Spacing(); ImGui::Spacing();
 
@@ -256,6 +257,46 @@ namespace gui
 		ImGui::SliderInt("Sand range", &world.sand_range, 1, 32);
 		ImGui::SameLine(); HelpMarker(
 			"Controls how far away sand can generate from a body of water"
+		);
+
+		ImGui::Spacing();
+	}
+
+	void ShowTreeSettings(WorldSettings& world)
+	{
+		if (!ImGui::CollapsingHeader("Trees"))
+			return;
+
+		ImGui::SliderInt("Tree spacing", &world.tree_spacing, 1, world.chunk_width);
+		ImGui::SameLine(); HelpMarker(
+			"Determines the amount of air blocks in-between trees"
+		);
+		
+		ImGui::SliderInt("Trees per chunk", &world.trees_per_chunk, 1, world.chunk_width);
+		ImGui::SameLine(); HelpMarker(
+			"The maximum amount of trees in a given chunk"
+		);
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Text("Individual tree settings");
+
+		ImGui::DragIntRange2("Trunk width", &world.min_trunk_width,
+			&world.max_trunk_width, 1, 1, 50);
+		ImGui::SameLine(); HelpMarker(
+			"Thickness of the trunk, in blocks on each side of the center"
+		);
+
+		ImGui::DragIntRange2("Trunk height", &world.min_trunk_height,
+			&world.max_trunk_height, 1, world.max_treetop_size, 100);
+		ImGui::SameLine(); HelpMarker(
+			"The height of the trunk in blocks"
+		);
+
+		ImGui::DragIntRange2("Treetop size", &world.min_treetop_size,
+			&world.max_treetop_size, 1, 0, 50);
+		ImGui::SameLine(); HelpMarker(
+			"The half-extends of the treetops"
 		);
 
 		ImGui::Spacing();
