@@ -1,6 +1,8 @@
 #pragma once
 #include <chrono>
+#include <functional>
 #include <iostream>
+#include <random>
 #include "Chunk.h"
 #include "noise/noise.h"
 
@@ -29,6 +31,9 @@ struct WorldSettings
 	int min_sea_level;
 	int max_sea_level;
 	int sand_range;
+
+	int tree_spacing;
+	int trees_per_chunk;
 };
 
 /**
@@ -108,6 +113,16 @@ public:
 	 * @param window The window to draw to
 	 */
 	void Draw(sf::RenderWindow& window);
+
+	/**
+	 * Generate random number
+	 *
+	 * @param min Minimum number (inclusive)
+	 * @param max Maximum number (inclusive)
+	 *
+	 * @returns A random number between min and max
+	 */
+	int GetRandomNumber(int min, int max);
 #pragma endregion
 
 #pragma region Variables
@@ -151,5 +166,10 @@ private:
 	std::vector<void (*)(World& world)> generation_tasks_;
 	// A list of all the instantiated chunks (row-major)
 	std::vector<Chunk*> chunks_;
+
+	// TODO: Move all noise related stuff to a Random class
+	// TODO: Make the generator have the same seed as the perlin noise
+	// Generator
+	std::mt19937 mt_generator_{ std::random_device{}() };
 #pragma endregion 
 };

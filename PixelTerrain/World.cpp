@@ -164,3 +164,8 @@ void World::Draw(sf::RenderWindow& window)
 		}
 	}
 }
+
+int World::GetRandomNumber(int min, int max)
+{
+	return std::uniform_int_distribution<int>{ min, max }(mt_generator_);
+}

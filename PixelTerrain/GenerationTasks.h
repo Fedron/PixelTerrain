@@ -1,6 +1,4 @@
 #pragma once
-#include <functional>
-#include <random>
 #include "MathHelpers.h"
 #include "World.h"
 
@@ -222,18 +220,11 @@ namespace generation_tasks
 	{
 		// Gets a random bool
         auto gen = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
-
-        // Random number generator
-		// TODO: Use PRNG
-        std::random_device device;
-        std::mt19937 generator(device());
-		const std::uniform_int_distribution<int> distribution(10, 25);
 		
-        const int min_tree_spacing = 5;
         int tree_count = 0;
 		
 		// Iterate over all surface blocks
-		for (int x = 0; x < world.world_width_; x++)
+		for (int x = 0; x < world.world_width_; x += world.gen_settings_.tree_spacing)
 		{
             for (int y = world.min_surface_level_; y <= world.max_surface_level_; y++)
             {
@@ -252,38 +243,70 @@ namespace generation_tasks
             	if (is_surface_block)
             	{
                     if (!gen()) continue;
-            		
-                    const int trunk_height = distribution(generator);
-                    const int trunk_width = distribution(generator) / 8;
-
+            		// Generate the tree
                     tree_count++;
-                    x += min_tree_spacing;
 
-            		// Creates the trunk
-            		for (int tx = 0; tx < trunk_width; tx++)
+            		// Determine the characteristics of the tree
+                    const int trunk_height = world.GetRandomNumber(10, 20);
+                    const int trunk_width = world.GetRandomNumber(1, 2);         		
+                    const int leaves_size =
+                        world.GetRandomNumber(trunk_width + 3, trunk_width + 8);
+
+            		// TODO: Support creating several branches
+                    // TODO: Generate roots
+            		
+            		// Generate the trunk
+            		for (int tx = -trunk_width; tx <= trunk_width; tx++)
             		{
-                        for (int ty = 0; ty < trunk_height; ty++)
+                        /*
+                         * Check if there is air underneath this trunk's x
+            			 * If so, create the trunk downwards as well
+            			 */
+                        int air_below = -1;
+                        if (world.GetBlock(x + tx, y - 1) == blocks::air)
                         {
-                            world.SetBlock(x + tx, y + ty, blocks::wood);
+	                        // Find how many air blocks are below this trunk x
+                        	for (int ay = y; ay >= world.min_surface_level_; ay--)
+                        	{
+                                if (world.GetBlock(x + tx, ay) == blocks::air)
+                                    air_below--;
+                                else
+                                    break;
+                        	}
                         }
+            			
+            			for (int ty = air_below; ty < trunk_height; ty++)
+            			{
+                            world.SetBlock(x + tx, y + ty, blocks::wood);
+            			}
             		}
 
-                    // Creates the leaves
-                    const int leaves_size = distribution(generator) / 4;
-            		for (int lx = x - leaves_size; lx <= x + leaves_size; lx++)
+                    // Generate the leaves
+            		for (int lx = -leaves_size; lx <= leaves_size; lx++)
             		{
-            			for (int ly = y + trunk_height - leaves_size; ly < y + trunk_height + leaves_size; ly++)
-            			{
-                            world.SetBlock(lx, ly, blocks::leaf);
-            			}
+                        for (int ly = -leaves_size; ly <= leaves_size; ly++)
+                        {
+                            world.SetBlock(x + lx, y + trunk_height + ly, blocks::leaf);
+                        }
             		}
             		
                     break;
             	}
             }
 
-            if (tree_count >= 20)
-                break;
+            // Check we haven't exceeded the chunk tree limit
+			if (tree_count >= world.gen_settings_.trees_per_chunk)
+			{
+                tree_count = 0;
+				
+				// Move onto next chunk
+                const int chunk_x = x / world.gen_settings_.chunk_width;
+                const int chunk_relative_x = x - (chunk_x * world.gen_settings_.chunk_width);
+
+                x += world.gen_settings_.chunk_width - chunk_relative_x;
+				// Accounts for our for-loop increment
+                x -= world.gen_settings_.tree_spacing;
+			}
 		}
 	}
 }

@@ -28,7 +28,8 @@ int main()
     	5, 20,
     	10, 30,
     	true,
-    	40, 250, 5
+    	40, 250, 5,
+        6, 50
     }, 10);
 	
 	// Add all generation steps and generate the world
