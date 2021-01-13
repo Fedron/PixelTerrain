@@ -29,26 +29,26 @@ namespace generation_tasks
      */
     inline void HeightMap(World& world)
     {
-        world.perlin_noise_.SetFrequency(world.gen_settings_.surface_smoothness);
+        world.random_.SetPerlinFrequency(world.gen_settings_.surface_smoothness);
 
         // Height-map generation
         for (int x = 0; x < world.world_width_; x++)
         {
         	// Random surface height of the column
             const int surface_height = maths::Remap(
-                world.GetNoise(x, 0),
+                world.random_.GetPerlin(x, 0),
                 -1, 1,
                 world.min_surface_level_, world.max_surface_level_);
 
         	// Grass thickness of the column
             const int grass_height = maths::Remap(
-                world.GetNoise(x, 10000),
+                world.random_.GetPerlin(x, 10000),
                 -1, 1,
                 surface_height - world.gen_settings_.grass_layer_thickness, surface_height);
 
         	// Dirt thickness of the column
             const int dirt_height = maths::Remap(
-                world.GetNoise(x, 20000),
+                world.random_.GetPerlin(x, 20000),
                 -1, 1,
                 grass_height - world.gen_settings_.dirt_layer_thickness, grass_height - 5);
 
@@ -114,7 +114,7 @@ namespace generation_tasks
      */
     inline void Overhangs(World& world)
     {
-        world.perlin_noise_.SetFrequency(world.gen_settings_.overhang_roughness);
+        world.random_.SetPerlinFrequency(world.gen_settings_.overhang_roughness);
 
         for (int x = 0; x < world.world_width_; x++) {
             for (int y = world.min_surface_level_; y < world.world_height_; y++) {
@@ -132,7 +132,7 @@ namespace generation_tasks
                 {
                 	// Amount to move the block left or right by
                     const int move_amount = maths::Remap(
-                        world.GetNoise(x + 20000, -10000),
+                        world.random_.GetPerlin(x + 20000, -10000),
                         -1, 1,
                         -30, 30
                     );
@@ -218,9 +218,6 @@ namespace generation_tasks
 	 */
 	inline void Trees(World& world)
 	{
-		// Gets a random bool
-        auto gen = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
-		
         int tree_count = 0;
 		
 		// Iterate over all surface blocks
@@ -242,26 +239,27 @@ namespace generation_tasks
 
             	if (is_surface_block)
             	{
-                    if (!gen()) continue;
+                    if (!world.random_.GetBool()) continue;
             		// Generate the tree
                     tree_count++;
 
             		// Determine the characteristics of the tree
-                    const int trunk_width = world.GetRandomNumber(
+                    const int trunk_width = world.random_.GetNumber(
 						world.gen_settings_.min_trunk_width,
                         world.gen_settings_.max_trunk_width
                     );
-                    const int trunk_height = world.GetRandomNumber(
+                    const int trunk_height = world.random_.GetNumber(
                         world.gen_settings_.min_trunk_height,
                         world.gen_settings_.max_trunk_height
                     );      		
-                    const int treetop_size = world.GetRandomNumber(
+                    const int treetop_size = world.random_.GetNumber(
                         trunk_width + world.gen_settings_.min_treetop_size,
                         trunk_width + world.gen_settings_.max_treetop_size
                     );
 
             		// TODO: Support creating several branches
                     // TODO: Generate roots
+            		// TODO: (Optional) Creating circular treetops
             		
             		// Generate the trunk
             		for (int tx = -trunk_width; tx <= trunk_width; tx++)

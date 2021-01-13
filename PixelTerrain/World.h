@@ -1,10 +1,8 @@
 #pragma once
 #include <chrono>
-#include <functional>
 #include <iostream>
-#include <random>
 #include "Chunk.h"
-#include "noise/noise.h"
+#include "Random.h"
 
 /**
  * Contains generation settings for the world
@@ -80,14 +78,6 @@ public:
 	void Generate();
 
 	/**
-	 * Gets the perlin-noise value at the given coordinates
-	 *
-	 * @param x X coordinate at which to sample
-	 * @param y Y coordinate at which to sample
-	 */
-	double GetNoise(int x, int y) const;
-
-	/**
 	 * Gets the block at the given coordinates
 	 *
 	 * @param x The global x coordinate of the block
@@ -119,16 +109,6 @@ public:
 	 * @param window The window to draw to
 	 */
 	void Draw(sf::RenderWindow& window);
-
-	/**
-	 * Generate random number
-	 *
-	 * @param min Minimum number (inclusive)
-	 * @param max Maximum number (inclusive)
-	 *
-	 * @returns A random number between min and max
-	 */
-	int GetRandomNumber(int min, int max);
 #pragma endregion
 
 #pragma region Variables
@@ -149,6 +129,9 @@ public:
 	// How long (in milliseconds) the previous generation took
 	int generation_time_;
 
+	// Random number generator used by the world
+	Random random_;
+	
 	// The half-extends of the square in which chunks are rendered
 	int render_range_;
 
@@ -164,18 +147,10 @@ public:
 	// The global sea-level
 	int sea_level_;
 
-	// libnoise Perlin noise module
-	noise::module::Perlin perlin_noise_;
-
 private:
 	// A list of all the generation tasks
 	std::vector<void (*)(World& world)> generation_tasks_;
 	// A list of all the instantiated chunks (row-major)
 	std::vector<Chunk*> chunks_;
-
-	// TODO: Move all noise related stuff to a Random class
-	// TODO: Make the generator have the same seed as the perlin noise
-	// Generator
-	std::mt19937 mt_generator_{ std::random_device{}() };
 #pragma endregion 
 };

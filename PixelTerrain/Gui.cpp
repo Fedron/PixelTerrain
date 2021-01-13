@@ -8,8 +8,7 @@ namespace gui
 	void ShowBrushSettings(sf::Vector2i& window_size, int& brush_size, Block** active_block)
 	{
 		const ImGuiWindowFlags flags =
-			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
+			ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar;
 		
 		static bool open = true;
 		if (!ImGui::Begin("Brush Settings", &open, flags))
@@ -17,16 +16,6 @@ namespace gui
 			ImGui::End();
 			return;
 		}
-
-		// Window Setup
-		ImGui::SetWindowSize(
-			ImVec2(130, 140)
-		);
-
-		ImGui::SetWindowPos(ImVec2(
-			0,
-			window_size.y - 140
-		));
 		
 		ImGui::Text("Brush size");
 		ImGui::SliderInt("", &brush_size, 1, 20);
@@ -34,7 +23,7 @@ namespace gui
 		ImGui::Spacing();
 
 		ImGui::Text("Active block");
-		const char* blocks[] = { "Dirt", "Grass", "Stone", "Sand", "Water" };
+		const char* blocks[] = { "Dirt", "Grass", "Stone", "Sand", "Water", "Wood", "Leaf" };
 		static int selected_block = 0;
 		ImGui::Combo(" ", &selected_block, blocks, IM_ARRAYSIZE(blocks));
 
@@ -49,6 +38,10 @@ namespace gui
 			*active_block = blocks::sand;
 		else if (selected_block == 4)
 			*active_block = blocks::water;
+		else if (selected_block == 5)
+			*active_block = blocks::wood;
+		else if (selected_block == 6)
+			*active_block = blocks::leaf;
 		
 		ImGui::End();
 	}
@@ -64,11 +57,6 @@ namespace gui
 			ImGui::End();
 			return;
 		}
-
-		// Window Setup
-		ImGui::SetWindowSize(
-			ImVec2(160, 100)
-		);
 
 		ImGui::Text("Move Speed");
 		ImGui::SliderFloat("", &move_speed, 0, 5000, "%.1f");
@@ -87,21 +75,13 @@ namespace gui
 
 	void ShowWorldSettings(sf::Vector2i& window_size, World& world)
 	{
-		const ImGuiWindowFlags flags =
-			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_MenuBar;
-		
-		static bool open = true;
-		if (!ImGui::Begin("Generation Settings", &open, flags))
+		ImGui::SetNextWindowSizeConstraints(ImVec2(-1, 0), ImVec2(-1, FLT_MAX));
+
+		if (!ImGui::Begin("Generation Settings"))
 		{			
 			ImGui::End();
 			return;
 		}
-
-		// Window setup
-		ImGui::SetWindowSize(ImVec2(
-			500, 640)
-		);
 		
 		// Seed settings
 		static bool random_seed = true;
@@ -139,11 +119,6 @@ namespace gui
 			world.Generate();
 		}
 		CenterText(std::string("World generated in " + std::to_string(world.generation_time_) + "ms"));
-
-		ImGui::SetWindowPos(ImVec2(
-			1280 - ImGui::GetWindowWidth(),
-			0
-		));
 		
 		ImGui::End();
 	}

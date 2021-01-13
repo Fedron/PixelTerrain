@@ -60,11 +60,13 @@ void World::Generate()
 	
 	// Set seeds to current time
 	gen_settings_.seed = time(nullptr);
-	perlin_noise_.SetSeed(gen_settings_.seed);
+	random_.SetSeed(gen_settings_.seed);
 	srand(gen_settings_.seed);
 
 	// Set water level
-	sea_level_ = gen_settings_.min_sea_level + (rand() % (gen_settings_.max_sea_level - gen_settings_.min_sea_level + 1));
+	sea_level_ = random_.GetNumber(
+		gen_settings_.min_sea_level, gen_settings_.max_sea_level
+	);
 
 	// Execute all the generation tasks
 	for (auto& generation_task : generation_tasks_)
@@ -81,12 +83,6 @@ void World::Generate()
 	const auto end_time = std::chrono::high_resolution_clock::now();
 	const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 	generation_time_ = duration.count();
-}
-
-double World::GetNoise(const int x, const int y) const
-{
-	// Sample the perlin noise value at x, y
-	return perlin_noise_.GetValue(x * 0.001, y * 0.001, 0);
 }
 
 Block* World::GetBlock(const int x, const int y) const
@@ -163,9 +159,4 @@ void World::Draw(sf::RenderWindow& window)
 			window.draw(*chunks_[x + y * settings_.num_chunks_x]);
 		}
 	}
-}
-
-int World::GetRandomNumber(int min, int max)
-{
-	return std::uniform_int_distribution<int>{ min, max }(mt_generator_);
 }

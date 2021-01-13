@@ -168,6 +168,7 @@
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="World.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="GenerationTasks.h" />
     <ClInclude Include="Gui.h" />
     <ClInclude Include="MathHelpers.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>

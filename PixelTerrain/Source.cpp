@@ -144,7 +144,7 @@ int main()
     	}
 
         // Update mouse buttons
-    	if (io.WantCaptureKeyboard)
+    	if (io.WantCaptureMouse || io.WantCaptureKeyboard)
     	{
             left_mouse_button_held = false;
             right_mouse_button_held = false;
