@@ -28,3 +28,7 @@ Below are several features that I either have planned or would like to implement
   - Along with several other simulated blocks like fire, smoke, explosives etc
 - Saving and loading both worlds and generation settings
 - Lighting (Similar to the look of [Starbound's lighting](https://cdn.cloudflare.steamstatic.com/steam/apps/211820/ss_198c15c2c8500bd57479c53713b4fbedb32b101a.1920x1080.jpg?t=1599228095))
+- Environmental features
+  - Leaves falling off trees
+  - Clouds
+  - Day/Night cycle
