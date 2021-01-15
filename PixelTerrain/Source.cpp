@@ -2,6 +2,7 @@
 
 #include "GenerationTasks.h"
 #include "Gui.h"
+#include "DayNight.h"
 
 int main()
 {
@@ -54,6 +55,8 @@ int main()
     sf::Vector2i mouse_pos;
     bool left_mouse_button_held = false;
     bool right_mouse_button_held = false;
+
+    DayNight day_night(500, window_size, world->settings_.block_size);
 	
 	// Game loop
     while (window.isOpen())
@@ -188,6 +191,7 @@ int main()
             }
         }
 
+        day_night.Update(delta_time);
         world->Update(window);
         ImGui::SFML::Update(window, delta_clock.restart());
 
@@ -201,7 +205,8 @@ int main()
         //ImGui::ShowDemoWindow();
     	
     	// Draw calls
-        window.clear(sf::Color(182, 227, 219, 255));
+        window.clear();
+        day_night.Draw(window);
         world->Draw(window);
         ImGui::SFML::Render(window);
         window.display();
