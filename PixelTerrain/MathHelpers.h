@@ -47,17 +47,4 @@ namespace maths
 		if (value < 0) return -1;
 		return 0;
 	}
-
-	/**
-	 * Returns the smallest of two values
-	 *
-	 * @param a The first value
-	 * @param b The second value
-	 *
-	 * @returns The smaller value of a and b
-	 */
-	inline int Min(const int a, const int b)
-	{
-		return a < b ? a : b;
-	}
 }
